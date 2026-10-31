@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={"darkMode":"class","theme":{"extend":{"colors":{"surface-dim":"#d2d9f4","on-secondary-container":"#006f66","primary-container":"#3730a3","primary":"#1f108e","surface-bright":"#faf8ff","surface-container-low":"#f2f3ff","surface-variant":"#dae2fd","tertiary":"#1e2e42","surface-container-lowest":"#ffffff","on-primary-fixed-variant":"#3b35a7","error":"#ba1a1a","tertiary-fixed-dim":"#b7c8e1","on-tertiary-container":"#a1b1ca","on-secondary-fixed":"#00201d","surface-tint":"#544fc0","on-primary":"#ffffff","on-tertiary-fixed":"#0b1c30","on-error":"#ffffff","tertiary-container":"#344459","outline-variant":"#c8c4d5","on-secondary":"#ffffff","outline":"#777584","on-background":"#131b2e","tertiary-fixed":"#d3e4fe","on-surface":"#131b2e","error-container":"#ffdad6","surface-container":"#eaedff","surface-container-high":"#e2e7ff","surface":"#faf8ff","secondary-fixed-dim":"#6bd8cb","secondary-container":"#86f2e4","inverse-on-surface":"#eef0ff","primary-fixed-dim":"#c3c0ff","on-primary-container":"#a9a7ff","on-surface-variant":"#464553","on-error-container":"#93000a","on-tertiary-fixed-variant":"#38485d","inverse-primary":"#c3c0ff","primary-fixed":"#e2dfff","on-tertiary":"#ffffff","secondary-fixed":"#89f5e7","on-secondary-fixed-variant":"#005049","background":"#faf8ff","on-primary-fixed":"#0f0069","surface-container-highest":"#dae2fd","secondary":"#006a61","inverse-surface":"#283044"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"gutter":"1.5rem","space-md":"1rem","margin":"2rem","space-xs":"0.25rem","space-2xl":"3rem","space-sm":"0.5rem","margin-mobile":"1rem","gutter-mobile":"0.75rem","space-xl":"2rem","space-lg":"1.5rem"},"fontFamily":{"label-md":["Inter"],"body-md":["Inter"],"headline-md":["Inter"],"headline-sm":["Inter"],"headline-lg":["Inter"],"body-sm":["Inter"],"label-sm":["Inter"],"body-lg":["Inter"],"display-lg":["Inter"],"title-md":["Inter"],"metric-xl":["Inter"],"metric-lg":["Inter"],"headline-lg-mobile":["Inter"]},"fontSize":{"label-md":["0.875rem",{"lineHeight":"1.25rem","fontWeight":"500"}],"body-md":["0.875rem",{"lineHeight":"1.375rem","fontWeight":"400"}],"headline-md":["1.25rem",{"lineHeight":"1.75rem","letterSpacing":"-0.015em","fontWeight":"600"}],"headline-sm":["1.125rem",{"lineHeight":"1.5rem","letterSpacing":"-0.01em","fontWeight":"600"}],"headline-lg":["1.75rem",{"lineHeight":"2.25rem","letterSpacing":"-0.02em","fontWeight":"600"}],"body-sm":["0.75rem",{"lineHeight":"1.125rem","fontWeight":"400"}],"label-sm":["0.75rem",{"lineHeight":"1rem","letterSpacing":"0.02em","fontWeight":"600"}],"body-lg":["1rem",{"lineHeight":"1.5rem","fontWeight":"400"}],"display-lg":["2.25rem",{"lineHeight":"2.75rem","letterSpacing":"-0.025em","fontWeight":"700"}],"title-md":["1rem",{"lineHeight":"1.5rem","letterSpacing":"-0.005em","fontWeight":"600"}],"metric-xl":["2rem",{"lineHeight":"2.25rem","letterSpacing":"-0.02em","fontWeight":"700"}],"metric-lg":["1.5rem",{"lineHeight":"1.75rem","letterSpacing":"-0.015em","fontWeight":"600"}],"headline-lg-mobile":["1.375rem",{"lineHeight":"1.75rem","letterSpacing":"-0.015em","fontWeight":"600"}]}}}}</script></head><body class="bg-surface font-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-full w-[260px] bg-surface-container-lowest shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-50 flex flex-col justify-between select-none"><div class="flex flex-col"><div class="h-[68px] px-space-md flex flex-col justify-center bg-surface-container-lowest"><div class="flex items-center gap-space-sm"><img alt="PayFlow AI Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1WMW9BQ2_h6YBxxvzZ_662ZH3DGQueDPpzaq3goMxG9rg9qwwaKow3UiwMrA2D5netLuI5-4Pj7j5Vni6xrGrHKwesRbbrMi09b2nQUdm1cID-jsNc_SiJrxM4zeXHtEk6OgFtb7_FwDTBF9G7r0TsdhrsQkNe5wBTAOBHfXw4rJC7KRVPjtY-LC7mt4fSxyGqTE36eBy6TkRdu0Ow05we6H0AbhFzh8HqCl7KHCrWf"/><span class="font-title-md text-title-md text-primary tracking-tight">PayFlow AI</span></div><span class="font-label-sm text-label-sm text-on-surface-variant font-medium tracking-wide mt-space-xs">Buyer Reliability Platform</span></div><nav class="px-space-sm py-space-md flex flex-col gap-space-xs" data-active-classes="bg-primary-container text-on-primary font-label-md rounded-lg shadow-sm"><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="dashboard" href="#"><span class="material-symbols-outlined text-[20px]">dashboard</span><span>Dashboard</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="buyers" href="#"><span class="material-symbols-outlined text-[20px]">group</span><span>Buyers</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="invoices" href="#"><span class="material-symbols-outlined text-[20px]">receipt_long</span><span>Invoices</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="risk-radar" href="#"><span class="material-symbols-outlined text-[20px]">radar</span><span>Risk Radar</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="cash-flow" href="#"><span class="material-symbols-outlined text-[20px]">account_balance_wallet</span><span>Cash Flow</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="reminders" href="#"><span class="material-symbols-outlined text-[20px]">notifications_active</span><span>Reminders</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="disputes" href="#"><span class="material-symbols-outlined text-[20px]">balance</span><span>Disputes</span></a></nav></div><div class="p-space-sm flex flex-col gap-space-xs bg-surface-container-lowest"><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg font-label-sm text-label-sm text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="documentation" href="#"><span class="material-symbols-outlined text-[18px]">help_outline</span><span>Help &amp; Documentation</span></a><div class="p-space-sm rounded-lg bg-surface-container-low flex items-center justify-between hover:bg-surface-container transition-colors cursor-pointer"><div class="flex flex-col min-w-0 pr-space-xs"><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-[16px] text-primary shrink-0">domain</span><span class="font-label-sm text-label-sm text-on-surface font-semibold truncate">Apex Engineering Ltd</span></div><span class="font-body-sm text-body-sm text-on-surface-variant font-mono truncate mt-0.5">GSTIN: 27AABCA1234F1Z</span></div><span class="material-symbols-outlined text-[18px] text-on-surface-variant shrink-0">unfold_more</span></div></div></aside><div class="pl-[260px]"><header class="fixed top-0 left-[260px] right-0 h-[68px] bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 px-space-xl flex items-center justify-between gap-space-md"><div class="flex items-center flex-1 max-w-xl"><div class="relative w-full"><span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[20px] text-outline pointer-events-none">search</span><input class="w-full h-10 pl-10 pr-4 bg-surface-container-low rounded-lg font-body-sm text-body-sm text-on-surface placeholder:text-outline focus:outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/20 transition-all" placeholder="Search buyers, invoices, GSTIN... (⌘K)" type="text"/></div></div><div class="flex items-center gap-space-md shrink-0"><div class="hidden sm:flex items-center gap-space-xs px-space-sm py-1 bg-surface-container-low rounded-full"><span class="w-2 h-2 rounded-full bg-secondary"></span><span class="font-label-sm text-label-sm text-on-surface-variant font-medium">Demo Environment</span></div><button class="inline-flex items-center gap-space-xs px-space-md h-10 rounded-lg bg-surface-container-low hover:bg-surface-container font-label-md text-label-md text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-[18px] text-on-surface-variant">file_download</span><span>Export Summary</span></button><button class="relative p-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-1.5 right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-on-primary font-label-sm text-[10px] font-semibold leading-none">3</span></button><div class="flex items-center gap-space-sm pl-space-xs"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDuOUUoqdU33nu4eR-yjUJjQvPm7OzdqYzcx-Ab-TNyW3wdNT7tLqTwbSP5Px6ETS5J6CHvrjVe29AFaQqIjkoXI4USZkTpyd6pepGJBhNtF0ZiG-IwNB8AIyiBbEEJ_FtdDr6FAmr2bGXt06C0_CKW9HjAQ6CdTpqFUs6oQSPIyUKy3XMf7KpBS-AVH2_hCfeslMOpppP8DjpDUrVJxgex8xdsilHxL7sb6TfGyfOc"/><div class="flex flex-col text-left"><span class="font-label-sm text-label-sm text-on-surface font-semibold leading-tight">Rajesh Mehta</span><span class="font-body-sm text-body-sm text-on-surface-variant leading-tight">Finance Lead</span></div></div></div></header><main class="w-full pt-[68px] min-h-screen bg-surface px-space-xl py-space-lg max-w-[1440px]"><div class="flex flex-col w-full">
+<!-- Top Breadcrumb & Action Row -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-space-md mb-space-lg">
+<nav class="flex items-center gap-space-xs font-body-sm text-body-sm text-on-surface-variant">
+<a class="hover:text-primary transition-colors" href="#">Overview</a>
+<span class="material-symbols-outlined text-[16px] text-outline">chevron_right</span>
+<a class="hover:text-primary transition-colors" href="#">Buyers</a>
+<span class="material-symbols-outlined text-[16px] text-outline">chevron_right</span>
+<span class="font-label-md text-label-md text-on-surface">Global Distributors</span>
+</nav>
+<div class="flex items-center gap-space-sm flex-wrap">
+<!-- Secondary Review Disputes Action -->
+<a class="inline-flex items-center gap-space-xs px-space-md h-10 rounded-lg bg-surface-container-lowest shadow-sm hover:bg-surface-container-low transition-colors font-label-md text-label-md text-on-surface" href="#">
+<span class="material-symbols-outlined text-[18px] text-primary">balance</span>
+<span>Review Disputes</span>
+<span class="inline-flex items-center justify-center px-1.5 py-0.5 rounded-full bg-error-container text-on-error-container font-label-sm text-[11px] font-semibold leading-none">1</span>
+</a>
+<!-- Ghost / Export Actions Dropdown Trigger -->
+<div class="relative">
+<button class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-surface-container-lowest shadow-sm hover:bg-surface-container-low text-on-surface-variant transition-colors" id="more-actions-btn" title="More Actions" type="button">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+<div class="hidden absolute right-0 mt-2 w-56 rounded-xl bg-surface-container-lowest shadow-xl py-space-xs z-30" id="more-actions-menu">
+<a class="flex items-center gap-space-sm px-space-md py-2 font-body-sm text-body-sm text-on-surface hover:bg-surface-container-low transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px] text-outline">download</span>
+<span>Export Buyer Ledger</span>
+</a>
+<a class="flex items-center gap-space-sm px-space-md py-2 font-body-sm text-body-sm text-on-surface hover:bg-surface-container-low transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px] text-outline">tune</span>
+<span>Adjust Credit Terms</span>
+</a>
+<a class="flex items-center gap-space-sm px-space-md py-2 font-body-sm text-body-sm text-on-surface hover:bg-surface-container-low transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px] text-outline">history</span>
+<span>Audit Trail Logs</span>
+</a>
+</div>
+</div>
+<!-- Primary Action: Send Reminder with modal trigger -->
+<div class="relative">
+<button class="inline-flex items-center gap-space-xs px-space-md h-10 rounded-lg bg-primary text-on-primary font-label-md text-label-md shadow-sm hover:bg-primary-container transition-all" id="send-reminder-btn" type="button">
+<span class="material-symbols-outlined text-[18px]">notifications_active</span>
+<span>Send Reminder</span>
+<span class="material-symbols-outlined text-[18px]">arrow_drop_down</span>
+</button>
+<div class="hidden absolute right-0 mt-2 w-64 rounded-xl bg-surface-container-lowest shadow-xl py-space-xs z-30" id="reminder-dropdown">
+<div class="px-space-md py-1.5 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Automated Dispatch</div>
+<button class="w-full text-left flex items-center gap-space-sm px-space-md py-2 font-body-sm text-body-sm text-on-surface hover:bg-surface-container-low transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px] text-secondary">chat</span>
+<span>WhatsApp Gentle Prompt</span>
+</button>
+<button class="w-full text-left flex items-center gap-space-sm px-space-md py-2 font-body-sm text-body-sm text-on-surface hover:bg-surface-container-low transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px] text-primary">mail</span>
+<span>Formal Escalation Email</span>
+</button>
+<button class="w-full text-left flex items-center gap-space-sm px-space-md py-2 font-body-sm text-body-sm text-on-surface hover:bg-surface-container-low transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px] text-error">assignment_late</span>
+<span>Statutory Section 15 Letter</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Header Card: Counterparty Profile & Payment Reliability Index -->
+<div class="w-full bg-surface-container-lowest rounded-xl p-space-lg shadow-sm mb-space-lg relative overflow-hidden">
+<div class="absolute right-0 top-0 w-96 h-96 bg-error-container/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20"></div>
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-lg relative z-10">
+<!-- Counterparty Core Identity -->
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-space-sm flex-wrap mb-space-xs">
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Global Distributors</h1>
+<!-- High Payment Risk Status Chip -->
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-error-container text-on-error-container font-label-sm text-label-sm">
+<span class="w-2 h-2 rounded-full bg-error"></span>
+            High Payment Risk
+          </span>
+</div>
+<!-- Meta Details Line -->
+<div class="flex flex-wrap items-center gap-x-space-md gap-y-1 font-body-sm text-body-sm text-on-surface-variant">
+<span class="inline-flex items-center gap-1">
+<span class="text-outline">GSTIN:</span>
+<span class="font-mono font-medium text-on-surface">33AABCG1122H1Z</span>
+</span>
+<span class="text-outline">•</span>
+<span class="inline-flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-outline">location_on</span>
+<span>Chennai, TN</span>
+</span>
+<span class="text-outline">•</span>
+<span class="inline-flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-outline">mail</span>
+<span>procurement@globaldist.in</span>
+</span>
+<span class="text-outline">•</span>
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-surface-container font-label-sm text-label-sm text-on-surface">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+            TallyPrime Connected
+          </span>
+</div>
+</div>
+<!-- Reliability Gauge & Metadata Badge -->
+<div class="flex items-center gap-space-lg bg-surface-container-low px-space-lg py-space-md rounded-xl shrink-0">
+<!-- Circular Gauge (Value 31/100) -->
+<div class="relative w-20 h-20 flex items-center justify-center shrink-0">
+<svg class="w-full h-full transform -rotate-90" viewbox="0 0 72 72">
+<!-- Background Track -->
+<circle class="text-surface-container fill-none" cx="36" cy="36" r="30" stroke="currentColor" stroke-width="6"></circle>
+<!-- Active Score Arc (31% of circumference: 2 * pi * 30 ≈ 188.5; stroke-dasharray="58.4 188.5") -->
+<circle class="text-error fill-none" cx="36" cy="36" r="30" stroke="currentColor" stroke-dasharray="58.4 188.5" stroke-linecap="round" stroke-width="6"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="font-headline-md text-headline-md text-error leading-none tabular-nums">31</span>
+<span class="font-label-sm text-[10px] text-on-surface-variant font-medium leading-none mt-0.5">/100</span>
+</div>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Payment Reliability Index</span>
+<span class="font-title-md text-title-md text-on-surface mt-0.5">Critically Delayed</span>
+<div class="inline-flex items-center gap-1 mt-1 font-body-sm text-body-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-[15px] text-outline">receipt</span>
+<span>Derived from 18 settled &amp; open invoices</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Main Dual Column Workspace (8 Cols / 4 Cols layout) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg">
+<!-- LEFT / MAIN ANALYTICAL STREAM (8 Cols) -->
+<div class="lg:col-span-8 flex flex-col gap-space-lg">
+<!-- SECTION 1: Why this score (Behavioral Dimensions) -->
+<section class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-xs mb-space-md">
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Payment Behaviour Determinants</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Empirical breakdown of behavioral indicators across verified ledger cycles</p>
+</div>
+<span class="font-label-sm text-label-sm px-2.5 py-1 rounded bg-surface-container text-on-surface-variant self-start sm:self-auto">
+            Algorithmic Audit
+          </span>
+</div>
+<!-- 5 Core Dimensions Grid -->
+<div class="flex flex-col gap-space-md">
+<!-- Dimension A: On-time payments (30% weight) -->
+<div class="p-space-md rounded-lg bg-surface-container-low flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-md text-label-md text-on-surface">On-time payments</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant font-mono">(30% weight)</span>
+</div>
+<div class="flex items-center gap-space-sm">
+<span class="font-label-md text-label-md text-error tabular-nums">18%</span>
+<span class="font-label-sm text-label-sm px-2 py-0.5 rounded bg-error-container text-on-error-container">Critical</span>
+</div>
+</div>
+<!-- Progress Bar -->
+<div class="w-full h-2 rounded-full bg-surface-container overflow-hidden">
+<div class="h-full bg-error rounded-full transition-all duration-500" style="width: 18%"></div>
+</div>
+<div class="flex items-center justify-between font-body-sm text-body-sm text-on-surface-variant">
+<span>Only 3 out of 18 invoices cleared without delinquency</span>
+<span class="tabular-nums">Benchmark: 85%</span>
+</div>
+</div>
+<!-- Dimension B: Average payment delay (25% weight) -->
+<div class="p-space-md rounded-lg bg-surface-container-low flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-md text-label-md text-on-surface">Average payment delay</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant font-mono">(25% weight)</span>
+</div>
+<div class="flex items-center gap-space-sm">
+<span class="font-label-md text-label-md text-error tabular-nums">45 days late</span>
+<span class="font-label-sm text-label-sm px-2 py-0.5 rounded bg-error-container text-on-error-container">Exceeded</span>
+</div>
+</div>
+<div class="w-full h-2 rounded-full bg-surface-container overflow-hidden">
+<div class="h-full bg-error rounded-full transition-all duration-500" style="width: 75%"></div>
+</div>
+<div class="flex items-center justify-between font-body-sm text-body-sm text-on-surface-variant">
+<span>Standard agreed term: Net 15 days from delivery verification</span>
+<span class="tabular-nums">Peer Benchmark: 12 days</span>
+</div>
+</div>
+<!-- Dimension C: Payment consistency (15% weight) -->
+<div class="p-space-md rounded-lg bg-surface-container-low flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-md text-label-md text-on-surface">Payment realization consistency</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant font-mono">(15% weight)</span>
+</div>
+<div class="flex items-center gap-space-sm">
+<span class="font-label-md text-label-md text-outline tabular-nums">Erratic batch clearances</span>
+<span class="font-label-sm text-label-sm px-2 py-0.5 rounded bg-surface-container-highest text-on-surface">Volatile</span>
+</div>
+</div>
+<div class="w-full h-2 rounded-full bg-surface-container overflow-hidden">
+<div class="h-full bg-outline rounded-full transition-all duration-500" style="width: 42%"></div>
+</div>
+<div class="flex items-center justify-between font-body-sm text-body-sm text-on-surface-variant">
+<span>Settlement intervals oscillate unpredictably between 20 and 70 days</span>
+<span>Predictability: Low</span>
+</div>
+</div>
+<!-- Dimension D: Broken payment commitments (15% weight) -->
+<div class="p-space-md rounded-lg bg-surface-container-low flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-md text-label-md text-on-surface">Broken payment commitments</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant font-mono">(15% weight)</span>
+</div>
+<div class="flex items-center gap-space-sm">
+<span class="font-label-md text-label-md text-error tabular-nums">4 missed dates</span>
+<span class="font-label-sm text-label-sm px-2 py-0.5 rounded bg-error-container text-on-error-container">Critical</span>
+</div>
+</div>
+<div class="w-full h-2 rounded-full bg-surface-container overflow-hidden">
+<div class="h-full bg-error rounded-full transition-all duration-500" style="width: 80%"></div>
+</div>
+<div class="flex items-center justify-between font-body-sm text-body-sm text-on-surface-variant">
+<span>Promised RTGS transaction dates missed following automated reminders</span>
+<span class="tabular-nums">Tolerance: 0 breaches</span>
+</div>
+</div>
+<!-- Dimension E: Past overdue behaviour (15% weight) -->
+<div class="p-space-md rounded-lg bg-surface-container-low flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-md text-label-md text-on-surface">Past overdue behaviour</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant font-mono">(15% weight)</span>
+</div>
+<div class="flex items-center gap-space-sm">
+<span class="font-label-md text-label-md text-error tabular-nums">83% overdue incidence</span>
+<span class="font-label-sm text-label-sm px-2 py-0.5 rounded bg-error-container text-on-error-container">High Delay Risk</span>
+</div>
+</div>
+<div class="w-full h-2 rounded-full bg-surface-container overflow-hidden">
+<div class="h-full bg-error rounded-full transition-all duration-500" style="width: 83%"></div>
+</div>
+<div class="flex items-center justify-between font-body-sm text-body-sm text-on-surface-variant">
+<span>15 of 18 historical bills required manual or system intervention</span>
+<span class="tabular-nums">Industry Avg: 19%</span>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 2: Payment Timeline Visual Chart -->
+<section class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-xs mb-space-lg">
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Payment Timeline — Days Late per Invoice</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Historical delay trend across 18 billed invoices from Nov 2023 to Oct 2024</p>
+</div>
+<div class="flex items-center gap-space-md font-body-sm text-body-sm text-on-surface-variant">
+<div class="flex items-center gap-1.5">
+<span class="w-3 h-0.5 bg-error"></span>
+<span>Delay (Days)</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="w-3 h-0.5 border-b border-dashed border-primary"></span>
+<span>MSME 45D Limit</span>
+</div>
+</div>
+</div>
+<!-- Inline SVG Trend Chart -->
+<div class="w-full bg-surface-container-low rounded-lg p-space-md">
+<div class="relative w-full h-56">
+<svg class="w-full h-full overflow-visible" preserveaspectratio="none" viewbox="0 0 680 180">
+<defs>
+<lineargradient id="lateTrendGradient" x1="0%" x2="0%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#ba1a1a" stop-opacity="0.28"></stop>
+<stop offset="100%" stop-color="#ba1a1a" stop-opacity="0.0"></stop>
+</lineargradient>
+</defs>
+<!-- Grid Horizontal Lines -->
+<!-- 60 Days: y=20 -->
+<line stroke="#dae2fd" stroke-width="1" x1="40" x2="660" y1="20" y2="20"></line>
+<text class="font-mono" fill="#777584" font-size="10" text-anchor="end" x="32" y="24">60d</text>
+<!-- 45 Days Threshold (Statutory Limit): y=55 -->
+<line stroke="#3730a3" stroke-dasharray="4 4" stroke-width="1.5" x1="40" x2="660" y1="55" y2="55"></line>
+<text class="font-mono" fill="#3730a3" font-size="10" font-weight="600" text-anchor="end" x="32" y="59">45d</text>
+<!-- 30 Days: y=90 -->
+<line stroke="#dae2fd" stroke-width="1" x1="40" x2="660" y1="90" y2="90"></line>
+<text class="font-mono" fill="#777584" font-size="10" text-anchor="end" x="32" y="94">30d</text>
+<!-- 15 Days: y=125 -->
+<line stroke="#dae2fd" stroke-width="1" x1="40" x2="660" y1="125" y2="125"></line>
+<text class="font-mono" fill="#777584" font-size="10" text-anchor="end" x="32" y="129">15d</text>
+<!-- 0 Days Baseline: y=160 -->
+<line stroke="#777584" stroke-width="1.5" x1="40" x2="660" y1="160" y2="160"></line>
+<text class="font-mono" fill="#777584" font-size="10" text-anchor="end" x="32" y="164">0d</text>
+<!-- Area Fill -->
+<path d="M 60 148 L 150 135 L 240 110 L 330 92 L 420 84 L 510 50 L 590 38 L 640 46 L 640 160 L 60 160 Z" fill="url(#lateTrendGradient)"></path>
+<!-- Trend Stroke Line -->
+<path d="M 60 148 L 150 135 L 240 110 L 330 92 L 420 84 L 510 50 L 590 38 L 640 46" fill="none" stroke="#ba1a1a" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></path>
+<!-- Data Node Circles -->
+<circle cx="60" cy="148" fill="#ffffff" r="4" stroke="#ba1a1a" stroke-width="2"></circle>
+<circle cx="150" cy="135" fill="#ffffff" r="4" stroke="#ba1a1a" stroke-width="2"></circle>
+<circle cx="240" cy="110" fill="#ffffff" r="4" stroke="#ba1a1a" stroke-width="2"></circle>
+<circle cx="330" cy="92" fill="#ffffff" r="4" stroke="#ba1a1a" stroke-width="2"></circle>
+<circle cx="420" cy="84" fill="#ffffff" r="4" stroke="#ba1a1a" stroke-width="2"></circle>
+<circle cx="510" cy="50" fill="#ba1a1a" r="5" stroke="#ffffff" stroke-width="2"></circle>
+<circle cx="590" cy="38" fill="#ba1a1a" r="5" stroke="#ffffff" stroke-width="2"></circle>
+<circle cx="640" cy="46" fill="#ba1a1a" r="5" stroke="#ffffff" stroke-width="2"></circle>
+</svg>
+</div>
+<!-- X Axis Month Labels -->
+<div class="flex justify-between pl-8 pr-2 pt-space-xs font-body-sm text-body-sm text-on-surface-variant font-mono">
+<span>Nov '23</span>
+<span>Jan '24</span>
+<span>Mar '24</span>
+<span>May '24</span>
+<span>Jul '24</span>
+<span>Sep '24</span>
+<span>Oct '24</span>
+</div>
+</div>
+<!-- Annotation Callout -->
+<div class="mt-space-md p-space-sm rounded-lg bg-surface-container flex items-center justify-between text-on-surface">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-[18px] text-error">trending_up</span>
+<span class="font-body-sm text-body-sm">
+<strong>Observation:</strong> Payment realization delays have amplified from 5 days late in Q4 2023 to consistently exceeding 45–60 days in recent cycles.
+            </span>
+</div>
+<span class="hidden sm:inline-block font-label-sm text-label-sm text-primary-container font-semibold">MSME Samadhan Applicable</span>
+</div>
+</section>
+<!-- SECTION 3: Invoices Data Grid -->
+<section class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden">
+<!-- Section Filter Header -->
+<div class="p-space-lg pb-space-md flex flex-col sm:flex-row sm:items-center justify-between gap-space-md">
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Invoices &amp; Reconciliation Status</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Verified against seller book entries and e-way bill receipts</p>
+</div>
+<!-- Tabs -->
+<div class="flex items-center gap-1 bg-surface-container-low p-1 rounded-lg">
+<button class="px-space-sm py-1 rounded font-label-sm text-label-sm bg-surface-container-lowest text-on-surface shadow-sm">
+              All (18)
+            </button>
+<button class="px-space-sm py-1 rounded font-label-sm text-label-sm text-on-surface-variant hover:text-on-surface transition-colors">
+              Overdue (2)
+            </button>
+<button class="px-space-sm py-1 rounded font-label-sm text-label-sm text-on-surface-variant hover:text-on-surface transition-colors">
+              Disputed (1)
+            </button>
+<button class="px-space-sm py-1 rounded font-label-sm text-label-sm text-on-surface-variant hover:text-on-surface transition-colors">
+              Paid (15)
+            </button>
+</div>
+</div>
+<!-- Table Responsive Scroller -->
+<div class="w-full overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider h-10">
+<th class="px-space-lg py-2">Invoice No.</th>
+<th class="px-space-md py-2">Invoice Date</th>
+<th class="px-space-md py-2 text-right">Amount</th>
+<th class="px-space-md py-2">Due Date</th>
+<th class="px-space-md py-2">Realization Status</th>
+<th class="px-space-md py-2 text-right">Variance</th>
+<th class="px-space-lg py-2 text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="font-body-md text-body-md divide-y-0">
+<!-- Row 1: Overdue -->
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="px-space-lg py-3 font-mono font-medium text-on-surface">#INV-2024-074</td>
+<td class="px-space-md py-3 text-on-surface-variant font-body-sm text-body-sm">Oct 02, 2024</td>
+<td class="px-space-md py-3 text-right font-mono font-semibold text-on-surface tabular-nums">₹1,40,000</td>
+<td class="px-space-md py-3 text-on-surface-variant font-body-sm text-body-sm">Oct 24, 2024</td>
+<td class="px-space-md py-3">
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-error-container text-on-error-container font-label-sm text-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-error"></span>
+                    Overdue
+                  </span>
+</td>
+<td class="px-space-md py-3 text-right font-mono text-error font-medium tabular-nums">48 days late</td>
+<td class="px-space-lg py-3 text-right">
+<button class="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-primary-container text-on-primary font-label-sm text-label-sm hover:opacity-90 transition-opacity" type="button">
+<span class="material-symbols-outlined text-[15px]">send</span>
+<span>Nudge</span>
+</button>
+</td>
+</tr>
+<!-- Row 2: Overdue -->
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="px-space-lg py-3 font-mono font-medium text-on-surface">#INV-2024-068</td>
+<td class="px-space-md py-3 text-on-surface-variant font-body-sm text-body-sm">Sep 10, 2024</td>
+<td class="px-space-md py-3 text-right font-mono font-semibold text-on-surface tabular-nums">₹1,10,000</td>
+<td class="px-space-md py-3 text-on-surface-variant font-body-sm text-body-sm">Sep 30, 2024</td>
+<td class="px-space-md py-3">
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-error-container text-on-error-container font-label-sm text-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-error"></span>
+                    Overdue
+                  </span>
+</td>
+<td class="px-space-md py-3 text-right font-mono text-error font-medium tabular-nums">52 days late</td>
+<td class="px-space-lg py-3 text-right">
+<button class="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-primary-container text-on-primary font-label-sm text-label-sm hover:opacity-90 transition-opacity" type="button">
+<span class="material-symbols-outlined text-[15px]">send</span>
+<span>Nudge</span>
+</button>
+</td>
+</tr>
+<!-- Row 3: Disputed -->
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="px-space-lg py-3 font-mono font-medium text-on-surface">#INV-2024-055</td>
+<td class="px-space-md py-3 text-on-surface-variant font-body-sm text-body-sm">Aug 15, 2024</td>
+<td class="px-space-md py-3 text-right font-mono font-semibold text-on-surface tabular-nums">₹1,00,000</td>
+<td class="px-space-md py-3 text-on-surface-variant font-body-sm text-body-sm">Aug 31, 2024</td>
+<td class="px-space-md py-3">
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-surface-container-highest text-on-surface font-label-sm text-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-outline"></span>
+                    Disputed (Review)
+                  </span>
+</td>
+<td class="px-space-md py-3 text-right font-mono text-outline font-medium tabular-nums">60 days late</td>
+<td class="px-space-lg py-3 text-right">
+<button class="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-surface-container text-on-surface font-label-sm text-label-sm hover:bg-surface-container-high transition-colors" type="button">
+<span class="material-symbols-outlined text-[15px]">search</span>
+<span>View Dispute</span>
+</button>
+</td>
+</tr>
+<!-- Row 4: Paid -->
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="px-space-lg py-3 font-mono font-medium text-on-surface">#INV-2024-039</td>
+<td class="px-space-md py-3 text-on-surface-variant font-body-sm text-body-sm">Jun 12, 2024</td>
+<td class="px-space-md py-3 text-right font-mono font-semibold text-on-surface tabular-nums">₹85,000</td>
+<td class="px-space-md py-3 text-on-surface-variant font-body-sm text-body-sm">Jun 30, 2024</td>
+<td class="px-space-md py-3">
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                    Paid (Aug 10)
+                  </span>
+</td>
+<td class="px-space-md py-3 text-right font-mono text-on-surface-variant tabular-nums">41 days late</td>
+<td class="px-space-lg py-3 text-right">
+<span class="font-body-sm text-body-sm text-on-surface-variant">—</span>
+</td>
+</tr>
+<!-- Row 5: Paid -->
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="px-space-lg py-3 font-mono font-medium text-on-surface">#INV-2024-022</td>
+<td class="px-space-md py-3 text-on-surface-variant font-body-sm text-body-sm">Apr 05, 2024</td>
+<td class="px-space-md py-3 text-right font-mono font-semibold text-on-surface tabular-nums">₹95,000</td>
+<td class="px-space-md py-3 text-on-surface-variant font-body-sm text-body-sm">Apr 25, 2024</td>
+<td class="px-space-md py-3">
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                    Paid (Jun 02)
+                  </span>
+</td>
+<td class="px-space-md py-3 text-right font-mono text-on-surface-variant tabular-nums">38 days late</td>
+<td class="px-space-lg py-3 text-right">
+<span class="font-body-sm text-body-sm text-on-surface-variant">—</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="px-space-lg py-space-md bg-surface-container-low flex items-center justify-between">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Showing 5 of 18 recorded ledger invoices</span>
+<a class="inline-flex items-center gap-1 font-label-sm text-label-sm text-primary hover:underline" href="#">
+<span>View Full Historical Ledger</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+</div>
+</section>
+</div>
+<!-- RIGHT / SIDE SUMMARY COLUMN (4 Cols) -->
+<div class="lg:col-span-4 flex flex-col gap-space-lg">
+<!-- CARD 1: Key Exposure Summary Card -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm">
+<div class="flex items-center justify-between pb-space-md">
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Exposure Summary</h2>
+<span class="material-symbols-outlined text-outline">account_balance_wallet</span>
+</div>
+<!-- Major Outstanding Metric -->
+<div class="p-space-md rounded-xl bg-surface-container-low mb-space-md">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Total Outstanding</span>
+<div class="flex items-baseline gap-space-xs mt-1">
+<span class="font-metric-xl text-metric-xl text-on-surface tabular-nums">₹3,50,000</span>
+<span class="font-body-sm text-body-sm text-error font-medium">(3 open)</span>
+</div>
+<div class="mt-space-xs flex items-center justify-between font-body-sm text-body-sm text-on-surface-variant">
+<span>Total Overdue:</span>
+<span class="font-mono font-semibold text-error tabular-nums">₹3,50,000 (100%)</span>
+</div>
+</div>
+<!-- Metric Details List -->
+<div class="flex flex-col gap-space-sm font-body-sm text-body-sm">
+<div class="flex items-center justify-between py-1.5">
+<span class="text-on-surface-variant">Agreed Terms:</span>
+<span class="font-medium text-on-surface">Net 15 days</span>
+</div>
+<div class="flex items-center justify-between py-1.5">
+<span class="text-on-surface-variant">Average Realization Delay:</span>
+<span class="font-mono font-semibold text-error tabular-nums">45 days (+30 over terms)</span>
+</div>
+<div class="flex items-center justify-between py-1.5">
+<span class="text-on-surface-variant">Unresolved Disputes:</span>
+<span class="inline-flex items-center gap-1 font-medium text-error">
+<span class="material-symbols-outlined text-[16px]">flag</span>
+              1 active case
+            </span>
+</div>
+<div class="flex items-center justify-between py-1.5">
+<span class="text-on-surface-variant">First Transaction:</span>
+<span class="text-on-surface">Nov 14, 2023</span>
+</div>
+</div>
+<!-- Quick Side Actions -->
+<div class="mt-space-md flex flex-col gap-space-xs">
+<button class="w-full inline-flex items-center justify-center gap-space-xs h-10 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px] text-primary">description</span>
+<span>Download Statement of Account</span>
+</button>
+<button class="w-full inline-flex items-center justify-center gap-space-xs h-10 rounded-lg bg-error-container text-on-error-container hover:opacity-90 font-label-md text-label-md transition-opacity" type="button">
+<span class="material-symbols-outlined text-[18px]">gavel</span>
+<span>Initiate Formal Recovery Notice</span>
+</button>
+</div>
+</div>
+<!-- CARD 2: Active Dispute Banner -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm relative overflow-hidden">
+<div class="flex items-start gap-space-sm">
+<div class="p-2 rounded-lg bg-surface-container shrink-0">
+<span class="material-symbols-outlined text-[22px] text-primary">balance</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-2">
+<span class="font-label-sm text-label-sm px-2 py-0.5 rounded bg-surface-container-highest text-on-surface font-semibold">Active Dispute</span>
+<span class="font-mono text-body-sm text-body-sm text-on-surface font-semibold tabular-nums">₹1,00,000</span>
+</div>
+<h3 class="font-title-md text-title-md text-on-surface mt-1 truncate">Invoice #INV-2024-055</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">
+              Counterparty raised delivery receipt discrepancy on batch <span class="font-mono font-medium text-on-surface">#B-409</span> (deduction claimed for quality inspection).
+            </p>
+<div class="mt-space-sm flex items-center justify-between text-body-sm">
+<span class="text-on-surface-variant">Under review by:</span>
+<span class="font-medium text-on-surface">Sales Ops (P. K. Verma)</span>
+</div>
+<a class="mt-space-md inline-flex items-center gap-1 font-label-sm text-label-sm text-primary hover:underline self-start" href="#">
+<span>View Dispute Docket &amp; Proof of Delivery</span>
+<span class="material-symbols-outlined text-[15px]">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+<!-- CARD 3: Informational / Dispute Resolution Guidance Box -->
+<div class="bg-surface-container-low rounded-xl p-space-md flex flex-col gap-space-xs">
+<div class="flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-[20px] text-primary shrink-0 mt-0.5">info</span>
+<div class="flex flex-col">
+<p class="font-body-sm text-body-sm text-on-surface">
+              A late payment is not proof of fraud. This score reflects payment behaviour against agreed terms.
+            </p>
+<a class="mt-space-xs inline-flex items-center gap-1 font-label-sm text-label-sm text-primary hover:underline" href="#">
+<span>Record looks wrong? Challenge a payment record.</span>
+<span class="material-symbols-outlined text-[14px]">open_in_new</span>
+</a>
+</div>
+</div>
+</div>
+<!-- CARD 4: Statutory Legal Framework Card -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm">
+<div class="flex items-center gap-space-xs mb-space-xs text-primary">
+<span class="material-symbols-outlined text-[20px]">shield</span>
+<span class="font-title-md text-title-md text-on-surface">MSME Samadhan Notice</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+          Under Section 15 of the MSMED Act, 2006, payment realization beyond 45 days incurs compound interest with monthly rests at 3 times the RBI bank rate.
+        </p>
+<div class="mt-space-md p-space-sm rounded bg-surface-container-low flex items-center justify-between font-mono font-medium text-body-sm text-on-surface">
+<span>Applicable Interest Accrual:</span>
+<span class="text-error tabular-nums">₹14,280</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Statutory Global Disclaimer Footer Note -->
+<footer class="mt-space-xl pt-space-md pb-space-lg flex flex-col sm:flex-row items-center justify-between gap-space-sm text-on-surface-variant font-body-sm text-body-sm">
+<div class="flex items-center gap-space-xs text-center sm:text-left">
+<span class="material-symbols-outlined text-[16px] text-outline">verified_user</span>
+<span>Scores are private estimates from your own invoice history, not a credit rating.</span>
+</div>
+<div class="flex items-center gap-space-md font-mono text-body-sm text-outline">
+<span>REF-ID: GD-33A-2024</span>
+<span>•</span>
+<span>Updated 12 mins ago</span>
+</div>
+</footer>
+</div>
+<!-- Micro-Interactions Script for Context Menus & Reminders -->
+<script>
+  (function () {
+    const moreBtn = document.getElementById('more-actions-btn');
+    const moreMenu = document.getElementById('more-actions-menu');
+    const reminderBtn = document.getElementById('send-reminder-btn');
+    const reminderMenu = document.getElementById('reminder-dropdown');
+
+    if (moreBtn && moreMenu) {
+      moreBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        moreMenu.classList.toggle('hidden');
+        if (reminderMenu) reminderMenu.classList.add('hidden');
+      });
+    }
+
+    if (reminderBtn && reminderMenu) {
+      reminderBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        reminderMenu.classList.toggle('hidden');
+        if (moreMenu) moreMenu.classList.add('hidden');
+      });
+    }
+
+    document.addEventListener('click', function () {
+      if (moreMenu) moreMenu.classList.add('hidden');
+      if (reminderMenu) reminderMenu.classList.add('hidden');
+    });
+  })();
+</script></main></div></body></html>
