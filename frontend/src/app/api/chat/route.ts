@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { GoogleGenAI } from '@google/genai';
+import { getGeminiClient, geminiModel } from '@/lib/gemini';
 import { getAssistantSystemInstruction } from '@/lib/assistant-prompt';
 
 export const runtime = 'nodejs';
@@ -26,9 +26,68 @@ function isRateLimited(ip: string): boolean {
   return false;
 }
 
+function mapGeminiError(error: any): { status: number; message: string } {
+  const errMsg = error?.message || String(error);
+  const lower = errMsg.toLowerCase();
+
+  if (
+    lower.includes('api key') ||
+    lower.includes('unauthenticated') ||
+    lower.includes('invalid api_key')
+  ) {
+    return {
+      status: 401,
+      message:
+        'Invalid or unconfigured Gemini API key. Please verify GEMINI_API_KEY in frontend/.env.local.',
+    };
+  }
+  if (
+    lower.includes('quota') ||
+    lower.includes('rate limit') ||
+    lower.includes('resource_exhausted') ||
+    lower.includes('429')
+  ) {
+    return {
+      status: 429,
+      message: 'Gemini API quota or rate limit exceeded. Please wait a minute and retry.',
+    };
+  }
+  if (
+    lower.includes('not found') ||
+    lower.includes('404') ||
+    lower.includes('unsupported model')
+  ) {
+    return {
+      status: 404,
+      message: `Gemini model "${geminiModel}" was not found or is unsupported for this key.`,
+    };
+  }
+  if (lower.includes('timed out') || lower.includes('timeout')) {
+    return {
+      status: 504,
+      message: 'Request timed out after 30 seconds. Please try again.',
+    };
+  }
+  if (
+    lower.includes('fetch failed') ||
+    lower.includes('econnrefused') ||
+    lower.includes('network')
+  ) {
+    return {
+      status: 502,
+      message: 'Network error connecting to Gemini API. Please check your internet connection.',
+    };
+  }
+  return {
+    status: 500,
+    message: `Gemini API server error: ${errMsg.slice(0, 150)}`,
+  };
+}
+
 export async function POST(req: NextRequest) {
   // 1. In-memory Rate Limiting per IP
-  const clientIp = req.headers.get('x-forwarded-for')?.split(',')[0].trim() || '127.0.0.1';
+  const clientIp =
+    req.headers.get('x-forwarded-for')?.split(',')[0].trim() || '127.0.0.1';
   if (isRateLimited(clientIp)) {
     return Response.json(
       { error: 'Rate limit exceeded. Please wait a minute before sending more queries.' },
@@ -46,13 +105,19 @@ export async function POST(req: NextRequest) {
 
   const { messages } = body;
   if (!Array.isArray(messages) || messages.length === 0) {
-    return Response.json({ error: 'Payload must contain a non-empty messages array' }, { status: 400 });
+    return Response.json(
+      { error: 'Payload must contain a non-empty messages array.' },
+      { status: 400 }
+    );
   }
 
   // Check character limits (max 1000 chars per message)
   for (const msg of messages) {
     if (!msg || typeof msg.content !== 'string') {
-      return Response.json({ error: 'Each message must have a string content' }, { status: 400 });
+      return Response.json(
+        { error: 'Each message must have a string content.' },
+        { status: 400 }
+      );
     }
     if (msg.content.length > 1000) {
       return Response.json(
@@ -62,18 +127,17 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  // 3. Check GEMINI_API_KEY
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey || apiKey.trim() === '') {
-    return new Response(
-      'Gemini API key is not configured. Add GEMINI_API_KEY to .env.local to enable live responses.',
+  // 3. Verify Gemini Client
+  let ai;
+  try {
+    ai = getGeminiClient();
+  } catch (err: any) {
+    return Response.json(
       {
-        status: 200,
-        headers: {
-          'Content-Type': 'text/plain; charset=utf-8',
-          'Cache-Control': 'no-cache',
-        },
-      }
+        error:
+          'Gemini API key is not configured. Add GEMINI_API_KEY to frontend/.env.local to enable live responses.',
+      },
+      { status: 400 }
     );
   }
 
@@ -90,13 +154,13 @@ export async function POST(req: NextRequest) {
   }
 
   if (contents.length === 0) {
-    return Response.json({ error: 'No user message found to respond to.' }, { status: 400 });
+    return Response.json(
+      { error: 'No valid user message found to respond to.' },
+      { status: 400 }
+    );
   }
 
-  const modelName = process.env.GEMINI_MODEL || 'gemini-3.5-flash';
-
   try {
-    const ai = new GoogleGenAI({ apiKey });
     const systemInstruction = getAssistantSystemInstruction();
 
     // 30 seconds max timeout promise
@@ -105,7 +169,7 @@ export async function POST(req: NextRequest) {
     );
 
     const streamPromise = ai.models.generateContentStream({
-      model: modelName,
+      model: geminiModel,
       contents,
       config: {
         systemInstruction,
@@ -124,10 +188,11 @@ export async function POST(req: NextRequest) {
               controller.enqueue(encoder.encode(chunk.text));
             }
           }
-        } catch (streamErr) {
+        } catch (streamErr: any) {
           console.error('Error during chunk streaming:', streamErr);
+          const mapped = mapGeminiError(streamErr);
           controller.enqueue(
-            encoder.encode('\n\n*(Response stream interrupted. Please retry.)*')
+            encoder.encode(`\n\n*(Error: ${mapped.message})*`)
           );
         } finally {
           controller.close();
@@ -144,18 +209,7 @@ export async function POST(req: NextRequest) {
     });
   } catch (error: any) {
     console.error('Gemini API Error:', error?.message || error);
-    return new Response(
-      `PayFlow AI encountered an error while analyzing ledger data: ${
-        error?.message?.includes('API key')
-          ? 'Invalid Gemini API key provided.'
-          : 'Service temporarily unavailable. Please retry shortly.'
-      }`,
-      {
-        status: 200,
-        headers: {
-          'Content-Type': 'text/plain; charset=utf-8',
-        },
-      }
-    );
+    const mapped = mapGeminiError(error);
+    return Response.json({ error: mapped.message }, { status: mapped.status });
   }
 }

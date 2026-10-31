@@ -14,7 +14,6 @@ import {
   Copy,
   Check,
   AlertCircle,
-  HelpCircle,
 } from 'lucide-react';
 
 interface ChatMessage {
@@ -22,6 +21,7 @@ interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
   timestamp: string;
+  isError?: boolean;
 }
 
 const SUGGESTED_CHIPS = [
@@ -62,6 +62,20 @@ function AssistantChatContent() {
     navigator.clipboard.writeText(text);
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  const handleRetry = () => {
+    if (isStreaming) return;
+    // Find the last user question in history
+    const lastUserMessage = [...messages].reverse().find((m) => m.role === 'user');
+    if (lastUserMessage) {
+      // Remove trailing error messages
+      setMessages((prev) => {
+        const lastUserIdx = prev.map((m) => m.id).lastIndexOf(lastUserMessage.id);
+        return prev.slice(0, lastUserIdx);
+      });
+      sendMessage(lastUserMessage.content);
+    }
   };
 
   const sendMessage = async (contentToSend: string) => {
@@ -108,12 +122,12 @@ function AssistantChatContent() {
           const errData = await response.json();
           if (errData?.error) errMessage = errData.error;
         } catch {
-          // Keep default message
+          // fallback
         }
         setMessages((prev) =>
           prev.map((msg) =>
             msg.id === assistantMsgId
-              ? { ...msg, content: `⚠️ ${errMessage}` }
+              ? { ...msg, content: errMessage, isError: true }
               : msg
           )
         );
@@ -125,7 +139,7 @@ function AssistantChatContent() {
         setMessages((prev) =>
           prev.map((msg) =>
             msg.id === assistantMsgId
-              ? { ...msg, content: 'No response received from assistant.' }
+              ? { ...msg, content: 'No response received from assistant.', isError: true }
               : msg
           )
         );
@@ -157,7 +171,8 @@ function AssistantChatContent() {
             ? {
                 ...msg,
                 content:
-                  '⚠️ Network error connecting to PayFlow AI assistant. Please check your connection and retry.',
+                  'Network connection error connecting to PayFlow AI. Please check your network and retry.',
+                isError: true,
               }
             : msg
         )
@@ -193,7 +208,7 @@ function AssistantChatContent() {
               <h1 className="text-lg font-bold text-slate-900 tracking-tight">PayFlow AI Assistant</h1>
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                Ledger Grounded
+                Gemini 3.5 Flash Live
               </span>
             </div>
             <p className="text-xs text-slate-500">
@@ -277,6 +292,8 @@ function AssistantChatContent() {
                   className={`max-w-[82%] rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-xs ${
                     isUser
                       ? 'bg-indigo-700 text-white rounded-br-xs'
+                      : msg.isError
+                      ? 'bg-rose-50/70 border border-rose-200 text-slate-900 rounded-bl-xs'
                       : 'bg-slate-50 border border-slate-200/80 text-slate-900 rounded-bl-xs'
                   }`}
                 >
@@ -287,7 +304,7 @@ function AssistantChatContent() {
                       </span>
                       <div className="flex items-center gap-2">
                         <span className="text-[10px] text-slate-400">{msg.timestamp}</span>
-                        {msg.content && (
+                        {msg.content && !msg.isError && (
                           <button
                             type="button"
                             onClick={() => handleCopy(msg.id, msg.content)}
@@ -307,6 +324,24 @@ function AssistantChatContent() {
 
                   {isUser ? (
                     <p className="whitespace-pre-wrap">{msg.content}</p>
+                  ) : msg.isError ? (
+                    <div className="flex flex-col gap-2.5 my-1">
+                      <div className="flex items-start gap-2 text-rose-700 text-xs leading-relaxed">
+                        <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+                        <div>
+                          <p className="font-semibold mb-0.5">Unable to get AI response</p>
+                          <p>{msg.content}</p>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleRetry}
+                        className="self-start inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-white bg-indigo-700 hover:bg-indigo-800 transition-colors shadow-2xs"
+                      >
+                        <RotateCcw className="w-3.5 h-3.5" />
+                        <span>Retry Question</span>
+                      </button>
+                    </div>
                   ) : msg.content ? (
                     <div className="prose prose-sm prose-slate max-w-none prose-headings:font-bold prose-headings:text-slate-900 prose-headings:my-2 prose-p:my-1.5 prose-ul:my-1.5 prose-li:my-0.5 prose-strong:text-slate-900">
                       <ReactMarkdown>{msg.content}</ReactMarkdown>
