@@ -21,6 +21,7 @@ import {
   Send,
   Flag,
   FileCheck2,
+  Sparkles,
 } from 'lucide-react';
 
 export default function BuyerDetailPage() {
@@ -138,6 +139,14 @@ export default function BuyerDetailPage() {
 
         {/* Action Buttons */}
         <div className="flex items-center gap-2.5 flex-wrap">
+          <Link
+            href={`/assistant?q=${encodeURIComponent(`Tell me about ${buyer.name}`)}`}
+            className="inline-flex items-center gap-1.5 px-3.5 h-10 rounded-lg bg-teal-50 border border-teal-200 hover:bg-teal-100 text-xs font-semibold text-teal-800 transition-colors shadow-sm"
+          >
+            <Sparkles className="w-4 h-4 text-teal-600" />
+            <span>Ask AI about this buyer</span>
+          </Link>
+
           <button
             type="button"
             onClick={() => setIsChallengeOpen(true)}
@@ -378,9 +387,9 @@ export default function BuyerDetailPage() {
                     </span>
                   </td>
                   <td className="py-3.5 px-4 text-right">
-                    {inv.days_overdue > 0 ? (
+                    {(inv.days_overdue || inv.overdue_days || 0) > 0 ? (
                       <span className="text-rose-600 font-bold tabular-nums">
-                        +{inv.days_overdue} days late
+                        +{(inv.days_overdue || inv.overdue_days || 0)} days late
                       </span>
                     ) : (
                       <span className="text-emerald-700 font-medium">On-time</span>

@@ -7,6 +7,7 @@ Suppliers lack:
 1. **Objective Buyer Behavioral Intelligence**: They cannot differentiate between buyers who pay late systematically versus those with temporary liquidity delays.
 2. **Predictive Cash Shortfall Radar**: Inability to forecast working capital gaps before payroll or raw material orders bounce.
 3. **Professional Collection Infrastructure**: Manual, awkward WhatsApp reminders, missing dispute audit trails, and broken verbal promises.
+4. **Instant Actionable Recovery Guidance**: Time-poor owners need immediate clarity on which counterparty to follow up with first and how to communicate effectively.
 
 ---
 
@@ -30,11 +31,19 @@ A forward-looking cash protection matrix that projects upcoming payment delays a
 - Forecasts probability of delay and estimates capital at risk.
 - **Always labeled as an ESTIMATE**, never an absolute guarantee.
 
+### Headline Feature 3: AI Chat Assistant (Gemini)
+An integrated natural-language financial copilot powered by Google Gemini via `@google/genai`:
+- Grounded deterministically with precomputed ledger facts (`COMPUTED_FACTS`) to prevent hallucination.
+- Instantly answers prioritized recovery queries (e.g. "Which customer should I follow up with first?", "Who are my riskiest buyers and why?").
+- Evaluates priority using an objective multi-factor formula combining overdue amount, oldest overdue duration, and reliability deficit.
+- Multi-lingual support: replies in the user's language and script (English, Hindi, Hinglish).
+- Generates polished, tone-calibrated WhatsApp & Email payment reminders with exact invoice details.
+
 ### Auxiliary Capabilities
-- **Invoice & PO Extraction (AI)**: Automated OCR parsing of uploaded invoices/POs (PDF/PNG) to extract invoice number, issue date, terms, due date, buyer GSTIN, and line items.
+- **Invoice & PO Extraction (Simulated)**: Ingestion of purchase orders and invoices extracting dates, amounts, and credit terms.
 - **Automated Reminder Drafting**: Contextual WhatsApp and Email communication templates categorized by tone: Gentle Reminder (pre-due), Firm Follow-up (1-15 days overdue), Formal Demand (16-45 days), and Legal Notice (45+ days MSMED reference).
 - **Dispute Docket Organizer**: Centralizes contested invoices, reasons (pricing mismatch, damaged goods, delivery delay), supporting communications, and generates a formal dispute evidence pack.
-- **Cash-Flow Forecast**: Recharts-based 30-to-60 day visual projection comparing expected receivables against fixed obligations.
+- **Cash-Flow Forecast**: 30-to-90 day visual projection comparing expected receivables against fixed obligations.
 
 ---
 

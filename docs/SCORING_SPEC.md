@@ -88,3 +88,14 @@ $$\text{overdue\_history} = \max(0, 100 - \text{severe\_penalty} - \text{current
 | **Metro Suppliers** | **54** | Needs attention | ₹2,30,000 | 18 days | 15 |
 | **Global Distributors** | **31** | High payment risk | ₹3,50,000 | 45 days | 9 |
 | **Nova Packaging** | **null** | Insufficient history | ₹75,000 | 0 days | 2 |
+
+---
+
+## 6. Priority Ranking Formula (Actionable Recovery Order)
+
+To prioritize buyer follow-up across overdue balance, delinquency aging, and score deficits:
+
+$$\text{Priority Score} = 0.50 \times \left(\frac{\text{Buyer Overdue Amount}}{\text{Max Overdue Amount}}\right) + 0.30 \times \left(\frac{\text{Buyer Oldest Overdue Days}}{\text{Max Oldest Overdue Days}}\right) + 0.20 \times \left(\frac{100 - \text{Score}}{100}\right)$$
+
+- For buyers with "Insufficient history", the score term is set to a neutral `0.50` and the buyer is never labeled as risky.
+- Detailed in `docs/AI_ASSISTANT.md`.

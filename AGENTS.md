@@ -6,11 +6,11 @@
 3. **Core Mechanism**: Invoices & POs are ingested, due dates tracked, and buyer payment behaviors objectively analyzed.
 4. **Headline 1**: **Buyer Reliability Score** (0-100 score relative to agreed payment terms, never weighted by invoice amount).
 5. **Headline 2**: **Payment Risk Radar** (Predictive exposure categorization and cash shortfall warnings, always labeled as estimates).
-6. **Auxiliary Tools**: AI invoice extraction, automated tone-calibrated reminder drafting (WhatsApp/Email), and formal dispute dossier packaging.
-7. **Strict Architecture**: Next.js (App Router, Tailwind CSS, Recharts) in `/frontend` + FastAPI (SQLModel, Pydantic v2) in `/backend`.
-8. **Communication**: Frontend interacts with backend strictly via typed API client at `frontend/src/lib/api.ts` (`NEXT_PUBLIC_API_BASE_URL`).
-9. **Zero Auth / No Landing Page**: The app is built for a single seeded demo business. Root `/` redirects immediately to `/dashboard`.
-10. **Agent Independence**: Backend is a typed skeleton with full mock data and stubs so partners can build backend features in isolation.
+6. **Headline 3**: **AI Assistant (Gemini)** (Context-grounded assistant answering questions on receivables, overdue rankings, and drafting reminders).
+7. **Strict Architecture**: Pure Next.js (App Router, Tailwind CSS, Recharts) in `/frontend` (Vercel Root Directory = `frontend`). No Python backend or DB.
+8. **Data Layer**: High-fidelity local demo data in `frontend/src/data/` with pure analytics in `frontend/src/lib/analytics.ts` (`AS_OF_DATE = "2026-10-31"`).
+9. **Zero Auth / No Landing Page**: The app is built for a single seeded demo business (`Kaveri Industrial Supplies`). Root `/` redirects immediately to `/dashboard`.
+10. **LLM Integration**: Streaming Next.js Route Handler at `/api/chat` using `@google/genai` with deterministic ledger prompt grounding.
 
 ---
 
@@ -22,13 +22,14 @@
 > - **Do NOT** build login, signup, logout, forgot-password, user profiles, or account settings.
 > - **Do NOT** add authentication or authorization of any kind: no JWT, sessions, OAuth, NextAuth, Clerk, Auth0, Firebase Auth, password hashing, User table, auth middleware, or auth headers.
 > - The application starts directly at `/dashboard`. Root `/` redirects to `/dashboard`.
-> - The entire application operates on ONE seeded demo business (`Kaveri Industrial Supplies`). Endpoints do not accept `business_id` or tokens.
-> - Backend router endpoints MUST use `get_current_business()` in `app/core/deps.py`.
+> - The entire application operates on ONE seeded demo business (`Kaveri Industrial Supplies`).
+> - The top bar shows a static business badge (no avatar dropdown, no logout).
 
 > [!CRITICAL]
-> **API Contract & Schema Stability**
-> - **Read `docs/API_CONTRACT.md` before touching any endpoint or API call.**
-> - Never alter existing schema field names or response shapes. Frontend and tests rely on the exact contract.
+> **Local Demo Data & Visual Stability**
+> - Single source of truth is `frontend/src/data/seed.json` and `frontend/src/data/index.ts`.
+> - Derived metrics (totals, aging, priority rankings) are computed via pure functions in `frontend/src/lib/analytics.ts`.
+> - The typed client in `frontend/src/lib/api.ts` returns local data immediately so all UI components, gauges, charts, and tables render identically without network failure.
 
 ---
 
@@ -40,92 +41,82 @@
 5. **Estimates Disclaimer**: Output from the Payment Risk Radar and Cash-Flow Forecast are always labeled as `"ESTIMATES"` or `"PROJECTIONS"`, never guarantees or absolute predictions.
 6. **No Accusatory Language**: Never use words like "fraud", "defaulter", "cheat", or "scam". Delays must be described factually: "overdue", "delayed payment", "high payment risk", "unfulfilled commitment".
 7. **Score Transparency**: Every score payload must return `transactions_count` and `calculated_at` timestamp.
-8. **Right to Challenge**: Suppliers can flag inaccurate records via `POST /api/buyers/{id}/records/challenge`.
+8. **Right to Challenge**: Suppliers can flag inaccurate records via the record challenge dialog.
 
 ---
 
-## 4. Repository Map
+## 4. Priority Ranking Formula (For Follow-Up & AI Assistant)
+
+To determine which customer should be followed up with first:
+
+$$\text{Priority Score} = 0.50 \times \left(\frac{\text{Buyer Overdue Amount}}{\text{Max Overdue Amount}}\right) + 0.30 \times \left(\frac{\text{Buyer Oldest Overdue Days}}{\text{Max Oldest Overdue Days}}\right) + 0.20 \times \left(\frac{100 - \text{Score}}{100}\right)$$
+
+- For buyers with "Insufficient history", the score factor defaults to `0.50` and the buyer is never called risky.
+- **Top Priority #1**: **Global Distributors** (₹3,50,000 overdue, 45 days late, Score: 31.0/100, Priority Score: 0.938).
+- For complete details, see `docs/AI_ASSISTANT.md`.
+
+---
+
+## 5. Repository Map
 
 ```
 Payflow.AI/
-├── AGENTS.md                                # This file: master guidance for agents
+├── AGENTS.md                                # Master guidance for AI agents
 ├── CLAUDE.md, GEMINI.md, .github/           # Agent short pointers
 ├── README.md, CONTRIBUTING.md               # Repo documentation & setup guides
-├── docs/                                    # System specs & documentation
+├── docs/                                    # Architecture & design documentation
 │   ├── PRODUCT.md                           # Problem space, personas, features, non-goals
 │   ├── ARCHITECTURE.md                      # Architecture diagram, data flow, folder map
-│   ├── DATA_MODEL.md                        # SQLModel schema & entity definitions
-│   ├── API_CONTRACT.md                      # Full REST API endpoints, schemas, mock samples
+│   ├── DATA_MODEL.md                        # TypeScript models & ledger schemas
+│   ├── AI_ASSISTANT.md                      # Gemini AI prompt design, priority formula & demo QA
 │   ├── SCORING_SPEC.md                      # Mathematical scoring rules, sub-scores, weights
 │   ├── UI_DESIGN_SYSTEM.md                  # Colors, typography, status badges, wording rules
-│   ├── FEATURES.md                          # F1-F7 features board & assignees
 │   └── DECISIONS.md                         # Architecture Decision Records (ADRs)
 ├── design/stitch-exports/                   # Design reference files
-├── frontend/                                # Next.js 14/15 App Router app
-│   ├── src/app/                             # App Router pages (redirects / to /dashboard)
-│   ├── src/components/                      # UI components & layouts
-│   ├── src/lib/api.ts                       # Typed API client connecting to backend
-│   └── src/lib/types.ts                     # TypeScript types matching API_CONTRACT.md
-└── backend/                                 # FastAPI application
-    ├── app/main.py                          # FastAPI setup, CORS, route registration
-    ├── app/core/config.py                   # Pydantic Settings
-    ├── app/core/deps.py                     # get_current_business() stub
-    ├── app/models/                          # SQLModel database tables (paise integer amounts)
-    ├── app/schemas/                         # Pydantic v2 schemas
-    ├── app/routers/                         # API routers for all resources
-    ├── app/services/                        # Business logic & services
-    │   └── scoring.py                       # Pure function baseline implementation (tested)
-    ├── app/data/seed.json                   # 6 demo buyers & realistic Indian MSME records
-    └── tests/                               # pytest test suite
+└── frontend/                                # Next.js 14 App Router application
+    ├── src/app/                             # App Router pages (/dashboard, /assistant, etc.)
+    │   ├── api/chat/route.ts                # Streaming Gemini AI route handler
+    │   ├── assistant/page.tsx               # Dedicated AI chat UI with suggested chips
+    │   ├── buyers/                          # Buyers portfolio & buyer detail views
+    │   ├── dashboard/                       # Overview dashboard
+    │   ├── invoices/                        # Invoices list & upload flow
+    │   ├── risk-radar/                      # Risk radar & exposure categorisation
+    │   ├── cashflow/                        # Cashflow forecast projection view
+    │   ├── reminders/                       # Tone-calibrated reminder drafting
+    │   └── disputes/                        # Dispute dossiers & evidence packaging
+    ├── src/components/                      # UI components (Sidebar, Header, ScoreGauge, etc.)
+    ├── src/data/                            # Single source of truth demo data (seed.json, index.ts)
+    ├── src/lib/analytics.ts                 # Derived ledger metrics & priority calculation
+    ├── src/lib/assistant-prompt.ts          # Gemini system prompt builder with injected facts
+    ├── src/lib/api.ts                       # Typed client reading from local data
+    └── src/lib/types.ts                     # TypeScript interfaces matching ledger entities
 ```
 
 ---
 
-## 5. How to Run Frontend and Backend
+## 6. How to Run Frontend
 
-### Backend (Python 3.10+)
-```bash
-cd backend
-python -m venv .venv
-# Windows: .venv\Scripts\activate | Linux/macOS: source .venv/bin/activate
-pip install -r requirements.txt
-uvicorn app.main:app --reload --port 8000
-```
-- Interactive Swagger docs: `http://localhost:8000/docs`
-- Health check: `http://localhost:8000/api/health`
-
-### Frontend (Node.js 18+)
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
-- Application dashboard: `http://localhost:3000` (auto-redirects to `/dashboard`)
 
----
+- Application dashboard: `http://localhost:3000` (auto-redirects `/` to `/dashboard`)
+- AI Assistant: `http://localhost:3000/assistant`
 
-## 6. How to Implement a Feature (For Partner AI Agents)
-
-1. **Locate your Task**: Open `docs/FEATURES.md` and find your assigned Feature ID (e.g., `F1`, `F3`, `F5`).
-2. **Review the Contract**: Consult `docs/API_CONTRACT.md` for the corresponding endpoint specifications and payload structures.
-3. **Touch Only Assigned Files**: Modify **only** the files specified in `docs/FEATURES.md` for your feature ID.
-4. **Preserve Schemas**: Do **NOT** change schema field names or response types in `app/schemas/` or `frontend/src/lib/types.ts`.
-5. **Update Service Header**: Every service file in `backend/app/services/` contains a required header:
-   ```python
-   # FEATURE: <ID and name, e.g. F3 Reminder drafting>
-   # STATUS: IMPLEMENTED (was STUB)
-   # OWNER: <Your name or agent ID>
-   # CONTRACT: docs/API_CONTRACT.md#reminders
-   # TODO: replace mock with real logic; DO NOT change the response schema
-   ```
-6. **Activate Tests**: In `backend/tests/test_services_stubs.py`, find your feature's test and remove `@pytest.mark.skip`. Ensure `pytest` passes.
-7. **Update Board**: In `docs/FEATURES.md`, change the feature's status from `STUB` to `IN_PROGRESS` or `COMPLETED`.
+### Environment Configuration:
+Create `frontend/.env.local`:
+```env
+GEMINI_API_KEY=your_key_here
+GEMINI_MODEL=gemini-3.5-flash
+```
+*(If unset, the AI Assistant provides a clean fallback message without crashing).*
 
 ---
 
 ## 7. Code Style & Engineering Standards
-- **Currency**: All monetary amounts in the database and API payloads MUST be stored as integers in **paise** (`1 INR = 100 paise`). The frontend formats paise into Indian numbering notation (e.g. ₹1,20,000).
-- **Date Format**: ISO 8601 strings (`YYYY-MM-DD` or `YYYY-MM-DDTHH:MM:SSZ`).
-- **Python**: PEP 8 style, type annotations on all function parameters and return values.
+- **Currency**: All monetary amounts are stored as integers in **paise** (`1 INR = 100 paise`). The frontend formats paise into Indian numbering notation (e.g. ₹1,20,000 or ₹8.5L).
+- **Date Format**: ISO 8601 strings (`YYYY-MM-DD` or `YYYY-MM-DDTHH:MM:SSZ`), anchored to fixed `AS_OF_DATE = "2026-10-31"`.
 - **TypeScript**: Strict mode enabled, no explicit `any`.
-- **Never Commit Secrets**: All keys (LLM API keys, DB credentials) must be loaded through environment variables. Use `.env.example` as a template.
+- **Never Commit Secrets**: `GEMINI_API_KEY` must never be logged, sent to the browser, or committed to git.

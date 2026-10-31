@@ -39,10 +39,11 @@ export default function BuyersPage() {
   }
 
   const filtered = buyers.filter((buyer) => {
+    const q = searchQuery.toLowerCase();
     const matchesSearch =
-      buyer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      buyer.gstin.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      buyer.city.toLowerCase().includes(searchQuery.toLowerCase());
+      (buyer.name || '').toLowerCase().includes(q) ||
+      (buyer.gstin || '').toLowerCase().includes(q) ||
+      (buyer.city || '').toLowerCase().includes(q);
 
     const matchesTier =
       selectedTier === 'all' || buyer.reliability_tier === selectedTier;

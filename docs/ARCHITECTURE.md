@@ -7,77 +7,74 @@ graph TD
     subgraph Browser ["Frontend: Next.js App Router (/frontend)"]
         UI_Shell["App Shell (Sidebar & TopBar)"]
         Dashboard["/dashboard (Portfolio & Summary)"]
+        AssistantView["/assistant (Gemini AI Chat UI)"]
         BuyersView["/buyers & /buyers/:id"]
         InvoicesView["/invoices (Upload & Ledger)"]
         RiskRadarView["/risk-radar (Exposure Matrix)"]
         CashflowView["/cashflow (Shortfall Chart)"]
         RemindersView["/reminders (Drafting Engine)"]
         DisputesView["/disputes (Dossier Organizer)"]
-        API_Client["Typed API Client (frontend/src/lib/api.ts)"]
         
         UI_Shell --> Dashboard
+        UI_Shell --> AssistantView
         UI_Shell --> BuyersView
         UI_Shell --> InvoicesView
         UI_Shell --> RiskRadarView
         UI_Shell --> CashflowView
         UI_Shell --> RemindersView
         UI_Shell --> DisputesView
-        
-        Dashboard & BuyersView & InvoicesView & RiskRadarView & CashflowView & RemindersView & DisputesView --> API_Client
+
+        subgraph ClientLayer ["Client Data & Service Layer"]
+            LocalClient["Local API Client (frontend/src/lib/api.ts)"]
+            AnalyticsEngine["Pure Analytics Engine (frontend/src/lib/analytics.ts)"]
+            DataSource["Demo Dataset & Seed Records (frontend/src/data/)"]
+        end
+
+        Dashboard & BuyersView & InvoicesView & RiskRadarView & CashflowView & RemindersView & DisputesView --> LocalClient
+        LocalClient --> DataSource
+        LocalClient --> AnalyticsEngine
+        AnalyticsEngine --> DataSource
     end
 
-    subgraph Backend ["Backend: FastAPI (/backend)"]
-        FastAPI_App["FastAPI Engine (app/main.py)"]
-        CORS["CORS Middleware (localhost:3000 + Vercel Domain)"]
-        CoreDeps["app/core/deps.py (get_current_business)"]
-        
-        subgraph Routers ["API Routers (app/routers/)"]
-            R_Dash["dashboard.py"]
-            R_Buyers["buyers.py"]
-            R_Invoices["invoices.py"]
-            R_Radar["risk_radar.py"]
-            R_Cash["cashflow.py"]
-            R_Reminders["reminders.py"]
-            R_Disputes["disputes.py"]
-        end
-
-        subgraph Services ["Service Layer (app/services/)"]
-            S_Scoring["scoring.py (Pure Function 0-100 Engine)"]
-            S_Extract["extraction.py (AI Extraction Stub)"]
-            S_Invoices["invoices.py (Ledger Stub)"]
-            S_Radar["risk_radar.py (Exposure Stub)"]
-            S_Cash["cashflow.py (Forecast Stub)"]
-            S_Reminders["reminders.py (Drafting Stub)"]
-            S_Disputes["disputes.py (Dossier Stub)"]
-        end
-
-        subgraph DataLayer ["Data & Storage"]
-            MockData["app/data/seed.json (6 Demo Buyers & MSME Records)"]
-            SQLModelDB["SQLModel / SQLite (Paise integers, no User table)"]
-        end
+    subgraph ServerSide ["Next.js Server Execution"]
+        ChatRoute["Route Handler: /api/chat (nodejs)"]
+        PromptBuilder["Prompt Builder (frontend/src/lib/assistant-prompt.ts)"]
+        RateLimiter["IP Rate Limiter & Message Guards"]
     end
 
-    API_Client -- "HTTP / REST (NEXT_PUBLIC_API_BASE_URL)" --> CORS
-    CORS --> FastAPI_App
-    FastAPI_App --> Routers
-    Routers --> CoreDeps
-    Routers --> Services
-    Services --> S_Scoring
-    Services --> MockData
-    Services -.-> SQLModelDB
+    subgraph LLM ["Google Cloud / Google AI"]
+        GeminiAPI["Gemini 3.5 Flash / 2.5 Flash via @google/genai SDK"]
+    end
+
+    AssistantView -- "POST { messages } (fetch stream)" --> ChatRoute
+    ChatRoute --> RateLimiter
+    ChatRoute --> PromptBuilder
+    PromptBuilder --> DataSource
+    PromptBuilder --> AnalyticsEngine
+    ChatRoute -- "generateContentStream(contents, systemInstruction)" --> GeminiAPI
+    GeminiAPI -- "Plain-text Stream" --> ChatRoute
+    ChatRoute -- "ReadableStream Chunks" --> AssistantView
 ```
 
 ---
 
-## 2. Data Flow Principles
+## 2. Core Architecture Principles
 
-1. **Client Ingestion**: The Next.js frontend calls the backend strictly via methods in `frontend/src/lib/api.ts`.
-2. **Context Independence**: Routers receive HTTP requests without auth tokens. Every router invokes `get_current_business()` from `app/core/deps.py` to retrieve the seeded supplier business entity.
-3. **Mock Switch**: When `USE_MOCK_DATA=true` (the default for rapid local prototyping and test suites), services directly return structured payloads matching `app/data/seed.json` and Pydantic schemas.
-4. **Scoring Pipeline**:
-   - `services/scoring.py` is implemented as a pure mathematical function.
-   - It takes a buyer's invoices, payment records, and payment commitments.
-   - It computes the 5 sub-scores (`on_time`, `delay`, `consistency`, `commitments`, `overdue_history`), applies dynamic weight reallocation if commitments are absent, checks minimum settled thresholds, and yields the final composite 0-100 score and tier label.
+1. **No External Backend or Database**:
+   - The application runs purely as a Next.js App Router project deployed to Vercel (Root Directory: `frontend`).
+   - Demo ledger data is pre-seeded with verified MSME business records anchored to a fixed `AS_OF_DATE = "2026-10-31"`.
+2. **Instant Local Data Client**:
+   - The typed client in `frontend/src/lib/api.ts` provides uniform asynchronous interfaces (`getDashboardSummary`, `getBuyers`, `getBuyerScore`, `getInvoices`, etc.) reading directly from local typed memory.
+   - All UI charts, gauges, tables, and badge components work without network dependency.
+3. **Pure Derived Analytics (`analytics.ts`)**:
+   - All aggregations (total receivables, overdue aging, shortfall risks, priority rankings) are implemented as pure mathematical functions.
+   - Standard priority formula:
+     $$\text{Priority Score} = 0.50 \times \left(\frac{\text{Overdue}}{\text{Max Overdue}}\right) + 0.30 \times \left(\frac{\text{Oldest Days}}{\text{Max Days}}\right) + 0.20 \times \left(\frac{100 - \text{Score}}{100}\right)$$
+4. **Secure AI Chat Assistant (`/api/chat`)**:
+   - Built with the official `@google/genai` TypeScript SDK.
+   - Grounded with `COMPUTED_FACTS` so the LLM never performs mental math.
+   - Rate limited (20 req/min per IP) and protected by character limits (max 1,000 chars per message).
+   - If `GEMINI_API_KEY` is not present, returns a friendly 200 fallback message rather than crashing.
 
 ---
 
@@ -92,28 +89,23 @@ Payflow.AI/
 ├── README.md                  # Setup & architecture summary
 ├── CONTRIBUTING.md            # Guidelines for team collaboration
 ├── docs/                      # Complete technical specifications
-│   ├── PRODUCT.md
-│   ├── ARCHITECTURE.md
-│   ├── DATA_MODEL.md
-│   ├── API_CONTRACT.md
-│   ├── SCORING_SPEC.md
-│   ├── UI_DESIGN_SYSTEM.md
-│   ├── FEATURES.md
-│   └── DECISIONS.md
-├── design/stitch-exports/     # Exported designs and mockups
-├── frontend/                  # Next.js 14/15 App Router app
-│   ├── src/app/               # App Router pages (/dashboard, /buyers, etc.)
-│   ├── src/components/        # UI components & layouts
-│   ├── src/lib/api.ts         # Typed API client
-│   └── src/lib/types.ts       # Typed contract definitions
-└── backend/                   # FastAPI backend
-    ├── app/main.py            # App initialization, CORS, routing
-    ├── app/core/config.py     # Pydantic Settings
-    ├── app/core/deps.py       # get_current_business() dependency
-    ├── app/models/            # SQLModel database tables
-    ├── app/schemas/           # Pydantic v2 schemas
-    ├── app/routers/           # API endpoints
-    ├── app/services/          # Service layer (stubs + scoring baseline)
-    ├── app/data/seed.json     # Seed dataset
-    └── tests/                 # pytest unit & API tests
+│   ├── PRODUCT.md             # Problem space, personas, features, non-goals
+│   ├── ARCHITECTURE.md        # Architecture diagram & data flow
+│   ├── DATA_MODEL.md          # TypeScript models & ledger entities
+│   ├── AI_ASSISTANT.md        # Gemini prompt design, priority formula & demo QA
+│   ├── SCORING_SPEC.md        # Mathematical scoring rules & weights
+│   ├── UI_DESIGN_SYSTEM.md    # Colors, fonts, tokens & wording rules
+│   └── DECISIONS.md           # Architecture Decision Records (ADRs)
+├── design/stitch-exports/     # Stitch UI design references
+└── frontend/                  # Next.js App Router application
+    ├── src/app/               # App Router pages (/dashboard, /assistant, etc.)
+    │   ├── api/chat/route.ts  # Streaming Gemini route handler
+    │   ├── assistant/page.tsx # AI chat interface
+    │   └── ...
+    ├── src/components/        # UI components
+    ├── src/data/              # Single source of truth demo data
+    ├── src/lib/analytics.ts   # Pure derived ledger metrics
+    ├── src/lib/assistant-prompt.ts # Gemini system prompt builder
+    ├── src/lib/api.ts         # Typed local data client
+    └── src/lib/types.ts       # Shared TypeScript interfaces
 ```

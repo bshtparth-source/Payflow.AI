@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   LayoutDashboard,
+  Sparkles,
   Users,
   Receipt,
   Radar,
@@ -18,6 +19,7 @@ import {
 
 const navItems = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+  { name: 'AI Assistant', href: '/assistant', icon: Sparkles },
   { name: 'Buyers', href: '/buyers', icon: Users },
   { name: 'Invoices', href: '/invoices', icon: Receipt },
   { name: 'Risk Radar', href: '/risk-radar', icon: Radar },
