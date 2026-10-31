@@ -56,6 +56,7 @@ function AssistantChatContent() {
       hasAutoSentRef.current = true;
       sendMessage(queryParam);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [queryParam]);
 
   const handleCopy = (id: string, text: string) => {

@@ -6,7 +6,7 @@
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4+-38B2AC?logo=tailwind-css)](https://tailwindcss.com)
 [![Gemini API](https://img.shields.io/badge/Google_Gemini-3.5_Flash-4285F4?logo=google)](https://ai.google.dev)
 
-**Payflow AI** is an intelligent payment-recovery and cash-flow platform specifically tailored for Indian MSMEs waiting on delayed B2B payments. The platform ingests invoices and purchase orders, tracks aging relative to agreed terms, predicts cash-flow shortfalls, drafts tone-calibrated recovery reminders, organizes formal dispute dossiers, computes an objective **Buyer Reliability Score** for counterparty buyers, and provides an integrated **AI Assistant** grounded in ledger data.
+**Payflow AI** is an intelligent payment-recovery and cash-flow platform specifically tailored for Indian MSMEs waiting on delayed B2B payments. The platform tracks invoice aging relative to agreed terms, predicts cash-flow shortfalls, drafts tone-calibrated recovery reminders, organizes formal dispute dossiers, computes an objective **Buyer Reliability Score** for counterparty buyers, and provides an integrated **AI Assistant** grounded in ledger data.
 
 > [!IMPORTANT]
 > **Strict Non-Goals / Scope Directives:**
@@ -61,6 +61,7 @@ Payflow.AI/
     ├── src/data/                  # Single source of truth demo data (seed.json, index.ts)
     ├── src/lib/analytics.ts       # Derived ledger metrics & priority calculations
     ├── src/lib/assistant-prompt.ts# Gemini prompt builder with ledger data injection
+    ├── src/lib/gemini.ts          # Server-only Google GenAI client instance
     ├── src/lib/api.ts             # Typed local client
     └── src/lib/types.ts           # TypeScript interfaces matching ledger entities
 ```
@@ -70,32 +71,42 @@ Payflow.AI/
 ## 🛠️ Local Development Quickstart
 
 ### Prerequisites
-- Node.js 18+ (Node 20+ recommended)
-- npm or pnpm
+- Node.js 20+
+- npm (comes with Node)
 
-### Setup
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-Open `http://localhost:3000` (automatically redirects to `/dashboard`).
-
-### AI Assistant Configuration (Optional)
-The AI Assistant functions with a clean fallback out of the box. To enable live streaming responses from Google Gemini:
-1. Create `frontend/.env.local`:
+### Setup Instructions
+1. Navigate to the frontend directory:
+   ```bash
+   cd frontend
+   ```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Set up environment variables:
+   ```bash
+   cp .env.example .env.local
+   ```
+   Add your Gemini API key from [Google AI Studio](https://aistudio.google.com/):
    ```env
    GEMINI_API_KEY=your_gemini_api_key_here
    GEMINI_MODEL=gemini-3.5-flash
    ```
-2. Restart the Next.js dev server.
+4. Start the development server:
+   ```bash
+   npm run dev
+   ```
+   Open `http://localhost:3000` (automatically redirects to `/dashboard`).
 
 ---
 
 ## 🚢 Deployment to Vercel
 
-The application is deployed directly to Vercel as a single frontend project:
-- **Framework Preset**: Next.js
+Deploy the application to Vercel in seconds:
+- **Framework Preset**: `Next.js`
 - **Root Directory**: `frontend`
-- **Environment Variables**: Add `GEMINI_API_KEY` in Vercel project settings.
+- **Build Command**: `npm run build`
+- **Output Directory**: `.next` (default)
+- **Environment Variables**:
+  - `GEMINI_API_KEY`: Your Gemini API key (*required for live AI responses*)
+  - `GEMINI_MODEL`: `gemini-3.5-flash` (*optional, defaults to `gemini-3.5-flash`*)

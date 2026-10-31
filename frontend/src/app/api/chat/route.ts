@@ -3,6 +3,7 @@ import { getGeminiClient, geminiModel } from '@/lib/gemini';
 import { getAssistantSystemInstruction } from '@/lib/assistant-prompt';
 
 export const runtime = 'nodejs';
+export const maxDuration = 30;
 
 interface ChatMessage {
   role: 'user' | 'assistant';
