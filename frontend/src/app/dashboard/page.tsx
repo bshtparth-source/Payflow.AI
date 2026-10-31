@@ -13,7 +13,6 @@ import {
   Plus,
   RefreshCw,
   ShieldCheck,
-  Filter,
 } from 'lucide-react';
 import { api } from '@/lib/api';
 import { Buyer, DashboardSummary } from '@/lib/types';
@@ -23,6 +22,7 @@ import { ReliabilityBadge } from '@/components/ReliabilityBadge';
 
 export default function DashboardPage() {
   const [summary, setSummary] = useState<DashboardSummary | null>(null);
+  const [buyers, setBuyers] = useState<Buyer[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedFilter, setSelectedFilter] = useState<string>('all');
   const [sortBy, setSortBy] = useState<string>('risk');
@@ -30,8 +30,12 @@ export default function DashboardPage() {
   useEffect(() => {
     async function loadData() {
       try {
-        const data = await api.getDashboardSummary();
-        setSummary(data);
+        const [summaryData, buyersData] = await Promise.all([
+          api.getDashboardSummary(),
+          api.getBuyers(),
+        ]);
+        setSummary(summaryData);
+        setBuyers(buyersData.length > 0 ? buyersData : (summaryData.buyers || []));
       } catch (err) {
         console.error('Failed to load dashboard data:', err);
       } finally {
@@ -50,7 +54,16 @@ export default function DashboardPage() {
     );
   }
 
-  const buyers = summary?.buyers || [];
+  // Safe Metric Extractions
+  const totalBuyers = summary?.buyer_count ?? summary?.metrics?.total_buyers ?? buyers.length ?? 6;
+  const totalOutstandingPaise =
+    summary?.total_receivables_paise ?? summary?.metrics?.total_outstanding_paise ?? 85000000;
+  const totalOverduePaise =
+    summary?.overdue_receivables_paise ?? summary?.metrics?.total_overdue_paise ?? 58000000;
+  const overduePercentage =
+    summary?.overdue_percentage ?? summary?.metrics?.overdue_percentage ?? 68;
+  const invoicesAtRisk =
+    summary?.urgent_actions?.length ?? summary?.metrics?.invoices_at_risk_count ?? 7;
 
   // Filter buyers
   const filteredBuyers = buyers.filter((buyer) => {
@@ -68,10 +81,14 @@ export default function DashboardPage() {
       return scoreA - scoreB;
     }
     if (sortBy === 'outstanding') {
-      return b.outstanding_paise - a.outstanding_paise;
+      const expA = a.outstanding_exposure_paise ?? a.outstanding_paise ?? 0;
+      const expB = b.outstanding_exposure_paise ?? b.outstanding_paise ?? 0;
+      return expB - expA;
     }
     if (sortBy === 'turnaround') {
-      return b.avg_payment_delay_days - a.avg_payment_delay_days;
+      const delA = a.average_delay_days ?? a.avg_payment_delay_days ?? 0;
+      const delB = b.average_delay_days ?? b.avg_payment_delay_days ?? 0;
+      return delB - delA;
     }
     return a.name.localeCompare(b.name);
   });
@@ -140,7 +157,7 @@ export default function DashboardPage() {
           </div>
           <div className="mt-4 flex flex-col">
             <span className="text-2xl font-bold tracking-tight text-slate-900 tabular-nums">
-              {summary?.metrics.total_buyers || 6}
+              {totalBuyers}
             </span>
             <span className="text-xs text-slate-500 mt-0.5">Active accounts in ledger</span>
           </div>
@@ -158,10 +175,10 @@ export default function DashboardPage() {
           </div>
           <div className="mt-4 flex flex-col">
             <span className="text-2xl font-bold tracking-tight text-slate-900 tabular-nums">
-              {formatINRLakhs((summary?.metrics.total_outstanding_paise || 85000000) / 100)}
+              {formatINRLakhs(totalOutstandingPaise / 100)}
             </span>
             <span className="text-xs text-slate-500 mt-0.5">
-              Across {summary?.metrics.total_invoices || 64} open invoices
+              Across ledger receivables
             </span>
           </div>
         </div>
@@ -178,10 +195,10 @@ export default function DashboardPage() {
           </div>
           <div className="mt-4 flex flex-col">
             <span className="text-2xl font-bold tracking-tight text-rose-600 tabular-nums">
-              {formatINRLakhs((summary?.metrics.total_overdue_paise || 58000000) / 100)}
+              {formatINRLakhs(totalOverduePaise / 100)}
             </span>
             <span className="text-xs text-slate-500 mt-0.5">
-              {summary?.metrics.overdue_percentage || 68}% of total outstanding
+              {overduePercentage}% of total outstanding
             </span>
           </div>
         </div>
@@ -198,9 +215,9 @@ export default function DashboardPage() {
           </div>
           <div className="mt-4 flex flex-col">
             <span className="text-2xl font-bold tracking-tight text-rose-600 tabular-nums">
-              {summary?.metrics.invoices_at_risk_count || 7}
+              {invoicesAtRisk}
             </span>
-            <span className="text-xs text-slate-500 mt-0.5">Overdue &gt; 30 days</span>
+            <span className="text-xs text-slate-500 mt-0.5">Actionable risk accounts</span>
           </div>
         </div>
       </div>
@@ -221,7 +238,7 @@ export default function DashboardPage() {
                     : 'text-slate-600 hover:bg-slate-100'
                 }`}
               >
-                All (6)
+                All ({buyers.length})
               </button>
               <button
                 type="button"
@@ -276,69 +293,76 @@ export default function DashboardPage() {
 
           {/* Buyer Cards Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {sortedBuyers.map((buyer) => (
-              <div
-                key={buyer.id}
-                className="bg-white rounded-xl p-5 border border-slate-200/80 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between"
-              >
-                {/* Header */}
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex flex-col min-w-0">
-                    <h3 className="text-base font-bold text-slate-900 truncate">
-                      {buyer.name}
-                    </h3>
-                    <span className="text-xs text-slate-500 font-mono mt-0.5">
-                      {buyer.gstin} • {buyer.city}, {buyer.state.substring(0, 2).toUpperCase()}
+            {sortedBuyers.map((buyer) => {
+              const outstandingPaise =
+                buyer.outstanding_exposure_paise ?? buyer.outstanding_paise ?? 0;
+              const delayDays = buyer.average_delay_days ?? buyer.avg_payment_delay_days ?? 0;
+              const count = buyer.transactions_count ?? buyer.invoices_count ?? 0;
+
+              return (
+                <div
+                  key={buyer.id}
+                  className="bg-white rounded-xl p-5 border border-slate-200/80 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between"
+                >
+                  {/* Header */}
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex flex-col min-w-0">
+                      <h3 className="text-base font-bold text-slate-900 truncate">
+                        {buyer.name}
+                      </h3>
+                      <span className="text-xs text-slate-500 font-mono mt-0.5 truncate">
+                        {buyer.gstin || 'GSTIN Pending'} • {buyer.city || 'India'}
+                      </span>
+                    </div>
+                    <ReliabilityBadge tier={buyer.reliability_tier} />
+                  </div>
+
+                  {/* Score Gauge & Key Figures */}
+                  <div className="flex items-center gap-4 my-4 bg-slate-50/70 p-3 rounded-lg border border-slate-100">
+                    <ScoreGauge score={buyer.reliability_score} tier={buyer.reliability_tier} size="md" />
+
+                    <div className="grid grid-cols-2 gap-3 flex-1">
+                      <div className="flex flex-col">
+                        <span className="text-[11px] font-medium text-slate-500">Outstanding</span>
+                        <span className="text-sm font-bold text-slate-900 tabular-nums mt-0.5">
+                          {formatINR(outstandingPaise)}
+                        </span>
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-[11px] font-medium text-slate-500">Avg delay</span>
+                        <span
+                          className={`text-sm font-bold tabular-nums mt-0.5 ${
+                            delayDays > 20
+                              ? 'text-rose-600'
+                              : delayDays > 10
+                              ? 'text-amber-600'
+                              : 'text-teal-700'
+                          }`}
+                        >
+                          {buyer.reliability_score === null ? 'N/A' : `${delayDays} days`}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Footer with Transactions count & Link */}
+                  <div className="flex items-center justify-between pt-1 border-t border-slate-100">
+                    <span className="text-xs text-slate-500 flex items-center gap-1">
+                      <FileCheck2 className="w-3.5 h-3.5 text-slate-400" />
+                      <span>Based on {count} invoices</span>
                     </span>
-                  </div>
-                  <ReliabilityBadge tier={buyer.reliability_tier} />
-                </div>
 
-                {/* Score Gauge & Key Figures */}
-                <div className="flex items-center gap-4 my-4 bg-slate-50/70 p-3 rounded-lg border border-slate-100">
-                  <ScoreGauge score={buyer.reliability_score} tier={buyer.reliability_tier} size="md" />
-
-                  <div className="grid grid-cols-2 gap-3 flex-1">
-                    <div className="flex flex-col">
-                      <span className="text-[11px] font-medium text-slate-500">Outstanding</span>
-                      <span className="text-sm font-bold text-slate-900 tabular-nums mt-0.5">
-                        {formatINR(buyer.outstanding_paise)}
-                      </span>
-                    </div>
-                    <div className="flex flex-col">
-                      <span className="text-[11px] font-medium text-slate-500">Avg delay</span>
-                      <span
-                        className={`text-sm font-bold tabular-nums mt-0.5 ${
-                          buyer.avg_payment_delay_days > 20
-                            ? 'text-rose-600'
-                            : buyer.avg_payment_delay_days > 10
-                            ? 'text-amber-600'
-                            : 'text-teal-700'
-                        }`}
-                      >
-                        {buyer.reliability_score === null ? 'N/A' : `${buyer.avg_payment_delay_days} days`}
-                      </span>
-                    </div>
+                    <Link
+                      href={`/buyers/${buyer.id}`}
+                      className="inline-flex items-center gap-1 text-xs font-semibold text-indigo-700 hover:text-indigo-900 transition-colors"
+                    >
+                      <span>View Ledger</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </Link>
                   </div>
                 </div>
-
-                {/* Footer with Transactions count & Link */}
-                <div className="flex items-center justify-between pt-1 border-t border-slate-100">
-                  <span className="text-xs text-slate-500 flex items-center gap-1">
-                    <FileCheck2 className="w-3.5 h-3.5 text-slate-400" />
-                    <span>Based on {buyer.invoices_count} invoices</span>
-                  </span>
-
-                  <Link
-                    href={`/buyers/${buyer.id}`}
-                    className="inline-flex items-center gap-1 text-xs font-semibold text-indigo-700 hover:text-indigo-900 transition-colors"
-                  >
-                    <span>View Ledger</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </Link>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           {/* Weekly Settlement Cycle Analysis card (From Stitch design) */}
@@ -368,37 +392,41 @@ export default function DashboardPage() {
 
         {/* Right Column: Realization Intelligence & Highlights (col-span-12 lg:col-span-4) */}
         <div className="col-span-12 lg:col-span-4 flex flex-col gap-4">
-          {/* Critical Risk Warning Alert */}
-          <div className="bg-rose-50 border border-rose-200 rounded-xl p-5 flex flex-col gap-3">
-            <div className="flex items-start gap-3">
-              <div className="p-2 bg-rose-100 rounded-lg text-rose-700 shrink-0">
-                <AlertTriangle className="w-5 h-5" />
+          {/* Urgent Action Callout */}
+          {summary?.urgent_actions && summary.urgent_actions.length > 0 ? (
+            <div className="bg-rose-50 border border-rose-200 rounded-xl p-5 flex flex-col gap-3">
+              <div className="flex items-start gap-3">
+                <div className="p-2 bg-rose-100 rounded-lg text-rose-700 shrink-0">
+                  <AlertTriangle className="w-5 h-5" />
+                </div>
+                <div className="flex flex-col">
+                  <h4 className="text-sm font-bold text-rose-900">
+                    Realization Shortfall Alert
+                  </h4>
+                  <p className="text-xs text-rose-700 mt-1">
+                    {summary.urgent_actions[0].buyer_name} is currently{' '}
+                    {summary.urgent_actions[0].days_overdue} days past terms with{' '}
+                    {formatINR(summary.urgent_actions[0].amount_paise)} overdue.
+                  </p>
+                </div>
               </div>
-              <div className="flex flex-col">
-                <h4 className="text-sm font-bold text-rose-900">
-                  Realization Shortfall Alert
-                </h4>
-                <p className="text-xs text-rose-700 mt-1">
-                  Global Distributors is currently 45 days past terms with ₹3,50,000 outstanding.
-                </p>
+
+              <div className="pt-2 border-t border-rose-200/70 flex items-center justify-between">
+                <span className="text-[11px] font-medium text-rose-800 truncate mr-2">
+                  Action: {summary.urgent_actions[0].recommended_action}
+                </span>
+                <Link
+                  href="/reminders"
+                  className="text-xs font-bold text-rose-900 hover:underline flex items-center gap-1 shrink-0"
+                >
+                  <span>Draft Notice</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
               </div>
             </div>
+          ) : null}
 
-            <div className="pt-2 border-t border-rose-200/70 flex items-center justify-between">
-              <span className="text-[11px] font-medium text-rose-800">
-                Action: Issue demand notice
-              </span>
-              <Link
-                href="/reminders"
-                className="text-xs font-bold text-rose-900 hover:underline flex items-center gap-1"
-              >
-                <span>Draft Notice</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-          </div>
-
-          {/* Quick Stats: Risk Distribution */}
+          {/* Portfolio Breakdown */}
           <div className="bg-white rounded-xl p-5 border border-slate-200/80 shadow-sm flex flex-col gap-4">
             <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider">
               Portfolio Reliability Matrix
@@ -410,42 +438,54 @@ export default function DashboardPage() {
                   <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
                   <span className="text-slate-700 font-medium">Highly reliable</span>
                 </div>
-                <span className="font-bold text-slate-900">1 buyer (₹50k)</span>
+                <span className="font-bold text-slate-900">
+                  {summary?.portfolio_breakdown?.highly_reliable ?? 1} buyer
+                </span>
               </div>
               <div className="flex items-center justify-between text-xs">
                 <div className="flex items-center gap-2">
                   <span className="w-2.5 h-2.5 rounded-full bg-lime-500" />
                   <span className="text-slate-700 font-medium">Reliable</span>
                 </div>
-                <span className="font-bold text-slate-900">1 buyer (₹1.2L)</span>
+                <span className="font-bold text-slate-900">
+                  {summary?.portfolio_breakdown?.reliable ?? 1} buyer
+                </span>
               </div>
               <div className="flex items-center justify-between text-xs">
                 <div className="flex items-center gap-2">
                   <span className="w-2.5 h-2.5 rounded-full bg-amber-500" />
                   <span className="text-slate-700 font-medium">Moderate reliability</span>
                 </div>
-                <span className="font-bold text-slate-900">1 buyer (₹1.0L)</span>
+                <span className="font-bold text-slate-900">
+                  {summary?.portfolio_breakdown?.moderate_reliability ?? 1} buyer
+                </span>
               </div>
               <div className="flex items-center justify-between text-xs">
                 <div className="flex items-center gap-2">
                   <span className="w-2.5 h-2.5 rounded-full bg-orange-500" />
                   <span className="text-slate-700 font-medium">Needs attention</span>
                 </div>
-                <span className="font-bold text-slate-900">1 buyer (₹2.3L)</span>
+                <span className="font-bold text-slate-900">
+                  {summary?.portfolio_breakdown?.needs_attention ?? 1} buyer
+                </span>
               </div>
               <div className="flex items-center justify-between text-xs">
                 <div className="flex items-center gap-2">
                   <span className="w-2.5 h-2.5 rounded-full bg-rose-500" />
                   <span className="text-slate-700 font-medium">High payment risk</span>
                 </div>
-                <span className="font-bold text-rose-600">1 buyer (₹3.5L)</span>
+                <span className="font-bold text-rose-600">
+                  {summary?.portfolio_breakdown?.high_risk ?? 1} buyer
+                </span>
               </div>
               <div className="flex items-center justify-between text-xs">
                 <div className="flex items-center gap-2">
                   <span className="w-2.5 h-2.5 rounded-full bg-slate-400" />
                   <span className="text-slate-700 font-medium">Insufficient history</span>
                 </div>
-                <span className="font-bold text-slate-500">1 buyer (₹0)</span>
+                <span className="font-bold text-slate-500">
+                  {summary?.portfolio_breakdown?.insufficient_history ?? 1} buyer
+                </span>
               </div>
             </div>
           </div>

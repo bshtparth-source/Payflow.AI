@@ -152,63 +152,70 @@ export default function BuyersPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {filtered.map((buyer) => (
-                <tr key={buyer.id} className="hover:bg-slate-50/80 transition-colors">
-                  <td className="py-4 px-4">
-                    <div className="flex flex-col">
-                      <span className="font-bold text-slate-900 text-sm">{buyer.name}</span>
-                      <span className="text-slate-500 font-mono text-[11px] mt-0.5">
-                        {buyer.gstin} • {buyer.city}, {buyer.state}
+              {filtered.map((buyer) => {
+                const count = buyer.transactions_count ?? buyer.invoices_count ?? 0;
+                const terms = buyer.agreed_terms_days ?? buyer.agreed_payment_terms_days ?? 30;
+                const exposure = buyer.outstanding_exposure_paise ?? buyer.outstanding_paise ?? 0;
+                const delay = buyer.average_delay_days ?? buyer.avg_payment_delay_days ?? 0;
+
+                return (
+                  <tr key={buyer.id} className="hover:bg-slate-50/80 transition-colors">
+                    <td className="py-4 px-4">
+                      <div className="flex flex-col">
+                        <span className="font-bold text-slate-900 text-sm">{buyer.name}</span>
+                        <span className="text-slate-500 font-mono text-[11px] mt-0.5">
+                          {buyer.gstin || 'GSTIN Pending'} • {buyer.city || 'India'}
+                        </span>
+                        <span className="text-slate-400 text-[10px] flex items-center gap-1 mt-1">
+                          <FileCheck2 className="w-3 h-3" />
+                          {count} settled/active invoices
+                        </span>
+                      </div>
+                    </td>
+                    <td className="py-4 px-4">
+                      <div className="flex justify-center">
+                        <ScoreGauge
+                          score={buyer.reliability_score}
+                          tier={buyer.reliability_tier}
+                          size="sm"
+                          showLabel={false}
+                        />
+                      </div>
+                    </td>
+                    <td className="py-4 px-4">
+                      <ReliabilityBadge tier={buyer.reliability_tier} />
+                    </td>
+                    <td className="py-4 px-4 text-right font-medium text-slate-700">
+                      Net {terms} days
+                    </td>
+                    <td className="py-4 px-4 text-right font-bold text-slate-900 tabular-nums">
+                      {formatINR(exposure)}
+                    </td>
+                    <td className="py-4 px-4 text-right">
+                      <span
+                        className={`font-semibold tabular-nums ${
+                          delay > 20
+                            ? 'text-rose-600'
+                            : delay > 10
+                            ? 'text-amber-600'
+                            : 'text-teal-700'
+                        }`}
+                      >
+                        {buyer.reliability_score === null ? 'N/A' : `${delay} days`}
                       </span>
-                      <span className="text-slate-400 text-[10px] flex items-center gap-1 mt-1">
-                        <FileCheck2 className="w-3 h-3" />
-                        {buyer.invoices_count} settled/active invoices
-                      </span>
-                    </div>
-                  </td>
-                  <td className="py-4 px-4">
-                    <div className="flex justify-center">
-                      <ScoreGauge
-                        score={buyer.reliability_score}
-                        tier={buyer.reliability_tier}
-                        size="sm"
-                        showLabel={false}
-                      />
-                    </div>
-                  </td>
-                  <td className="py-4 px-4">
-                    <ReliabilityBadge tier={buyer.reliability_tier} />
-                  </td>
-                  <td className="py-4 px-4 text-right font-medium text-slate-700">
-                    Net {buyer.agreed_payment_terms_days} days
-                  </td>
-                  <td className="py-4 px-4 text-right font-bold text-slate-900 tabular-nums">
-                    {formatINR(buyer.outstanding_paise)}
-                  </td>
-                  <td className="py-4 px-4 text-right">
-                    <span
-                      className={`font-semibold tabular-nums ${
-                        buyer.avg_payment_delay_days > 20
-                          ? 'text-rose-600'
-                          : buyer.avg_payment_delay_days > 10
-                          ? 'text-amber-600'
-                          : 'text-teal-700'
-                      }`}
-                    >
-                      {buyer.reliability_score === null ? 'N/A' : `${buyer.avg_payment_delay_days} days`}
-                    </span>
-                  </td>
-                  <td className="py-4 px-4 text-right">
-                    <Link
-                      href={`/buyers/${buyer.id}`}
-                      className="inline-flex items-center gap-1 text-xs font-semibold text-indigo-700 hover:text-indigo-900 transition-colors"
-                    >
-                      <span>Ledger</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </Link>
-                  </td>
-                </tr>
-              ))}
+                    </td>
+                    <td className="py-4 px-4 text-right">
+                      <Link
+                        href={`/buyers/${buyer.id}`}
+                        className="inline-flex items-center gap-1 text-xs font-semibold text-indigo-700 hover:text-indigo-900 transition-colors"
+                      >
+                        <span>Ledger</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </Link>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

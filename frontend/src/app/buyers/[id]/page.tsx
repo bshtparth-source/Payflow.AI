@@ -84,12 +84,18 @@ export default function BuyerDetailPage() {
     );
   }
 
-  const sub = scoreData?.sub_scores || {
-    on_time: 25,
-    delay: 20,
-    consistency: 35,
-    commitments: 30,
-    overdue_history: 45,
+  const termsDays = buyer.agreed_terms_days ?? buyer.agreed_payment_terms_days ?? 30;
+  const exposurePaise = buyer.outstanding_exposure_paise ?? buyer.outstanding_paise ?? 0;
+  const overduePaise = buyer.overdue_paise ?? (buyer.reliability_tier === 'High payment risk' ? exposurePaise : 0);
+  const txCount = scoreData?.transactions_count ?? buyer.transactions_count ?? buyer.invoices_count ?? 0;
+  const activeDisputes = buyer.active_disputes_count ?? buyer.disputed_count ?? 0;
+
+  const sub = {
+    on_time: Math.round(scoreData?.sub_scores?.on_time ?? 25),
+    delay: Math.round(scoreData?.sub_scores?.delay ?? 20),
+    consistency: Math.round(scoreData?.sub_scores?.consistency ?? 35),
+    commitments: Math.round(scoreData?.sub_scores?.commitments ?? 30),
+    overdue_history: Math.round(scoreData?.sub_scores?.overdue_history ?? 45),
   };
 
   return (
@@ -113,19 +119,19 @@ export default function BuyerDetailPage() {
           </div>
 
           <div className="flex items-center gap-4 text-xs text-slate-500 font-mono flex-wrap">
-            <span>GSTIN: {buyer.gstin}</span>
+            <span>GSTIN: {buyer.gstin || 'GSTIN Pending'}</span>
             <span>•</span>
-            <span>{buyer.legal_name}</span>
+            <span>{buyer.legal_name || buyer.name}</span>
             <span>•</span>
-            <span>{buyer.city}, {buyer.state}</span>
+            <span>{buyer.city || 'India'}, {buyer.state || ''}</span>
           </div>
 
           <div className="flex items-center gap-3 text-xs text-slate-600 mt-1">
             <span className="bg-slate-100 px-2.5 py-1 rounded-md border border-slate-200">
-              Agreed Credit Terms: <strong>Net {buyer.agreed_payment_terms_days} days</strong>
+              Agreed Credit Terms: <strong>Net {termsDays} days</strong>
             </span>
             <span className="bg-slate-100 px-2.5 py-1 rounded-md border border-slate-200">
-              Transactions Tracked: <strong>{scoreData?.transactions_count || buyer.invoices_count}</strong>
+              Transactions Tracked: <strong>{txCount}</strong>
             </span>
           </div>
         </div>
@@ -152,12 +158,12 @@ export default function BuyerDetailPage() {
       </div>
 
       {/* Disputed Invoices Banner Notice */}
-      {buyer.disputed_count && buyer.disputed_count > 0 ? (
+      {activeDisputes > 0 ? (
         <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <Scale className="w-5 h-5 text-amber-700 shrink-0" />
             <div className="text-xs text-amber-900">
-              <strong>1 invoice under active dispute review.</strong> In accordance with mathematical scoring rules, disputed invoices are strictly excluded from the Buyer Reliability Score calculation.
+              <strong>{activeDisputes} invoice under active dispute review.</strong> In accordance with mathematical scoring rules, disputed invoices are strictly excluded from the Buyer Reliability Score calculation.
             </div>
           </div>
           <Link
@@ -193,10 +199,10 @@ export default function BuyerDetailPage() {
               <div className="flex flex-col gap-1">
                 <span className="text-xl font-bold text-slate-900">{scoreData?.tier}</span>
                 <p className="text-xs text-slate-500 leading-relaxed">
-                  Behavioral index calculated relative to agreed credit terms of Net {buyer.agreed_payment_terms_days} days.
+                  Behavioral index calculated relative to agreed credit terms of Net {termsDays} days.
                 </p>
                 <span className="text-[11px] text-indigo-700 font-medium">
-                  {buyer.invoices_count} settled transactions evaluated
+                  {txCount} settled transactions evaluated
                 </span>
               </div>
             </div>
@@ -209,13 +215,13 @@ export default function BuyerDetailPage() {
             <div className="flex items-center justify-between">
               <span className="text-sm text-slate-500">Current Overdue</span>
               <span className="text-base font-bold text-rose-600 tabular-nums">
-                {formatINR(buyer.overdue_paise)}
+                {formatINR(overduePaise)}
               </span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-slate-500">Total Unsettled</span>
               <span className="text-base font-bold text-slate-900 tabular-nums">
-                {formatINR(buyer.outstanding_paise)}
+                {formatINR(exposurePaise)}
               </span>
             </div>
           </div>
