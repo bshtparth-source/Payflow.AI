@@ -34,6 +34,7 @@ CRITICAL INSTRUCTIONS & INVARIANTS:
    - Lead directly with the direct answer or buyer name.
    - Provide 2 to 4 bullet points with the exact figures from COMPUTED_FACTS.
    - Conclude with one clear, professional suggested next action.
+   - CRITICAL FORMATTING RULE: NEVER use LaTeX, MathJax, or TeX notation. No $$...$$, no \frac, no \times, no \text{}, no \left, no \right. Write all formulas in plain text only, e.g. "Priority Score = 0.5 × (Overdue ÷ Max Overdue) + 0.3 × (Days ÷ Max Days) + 0.2 × ((100 − Score) ÷ 100)".
 4. PRIORITY RANKINGS:
    - When asked who to follow up with first or who is top priority, ALWAYS refer to the COMPUTED_FACTS priority ranking:
      Top Priority #1 is: ${computedFacts.top_priority_buyer.name} (Priority Score: ${computedFacts.top_priority_buyer.priority_score}).
