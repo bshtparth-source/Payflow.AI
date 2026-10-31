@@ -1,21 +1,36 @@
 import 'server-only';
 import { GoogleGenAI } from '@google/genai';
 
-export const geminiModel = process.env.GEMINI_MODEL || 'gemini-3.5-flash';
-
-let clientInstance: GoogleGenAI | null = null;
-
-export function getGeminiClient(): GoogleGenAI {
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey || apiKey.trim() === '') {
-    throw new Error('GEMINI_API_KEY is not configured.');
+function cleanEnvValue(val?: string): string | null {
+  if (!val) return null;
+  let trimmed = val.trim();
+  // Strip surrounding quotes if user entered them in Vercel UI or .env
+  if (
+    (trimmed.startsWith('"') && trimmed.endsWith('"')) ||
+    (trimmed.startsWith("'") && trimmed.endsWith("'"))
+  ) {
+    trimmed = trimmed.slice(1, -1).trim();
   }
-  if (!clientInstance) {
-    clientInstance = new GoogleGenAI({ apiKey });
-  }
-  return clientInstance;
+  return trimmed.length > 0 ? trimmed : null;
 }
 
-export const ai = process.env.GEMINI_API_KEY
-  ? new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY })
-  : (null as unknown as GoogleGenAI);
+export function getGeminiApiKey(): string | null {
+  return cleanEnvValue(process.env.GEMINI_API_KEY);
+}
+
+export function getGeminiModel(): string {
+  const model = cleanEnvValue(process.env.GEMINI_MODEL);
+  return model || 'gemini-3.5-flash';
+}
+
+export function isGeminiConfigured(): boolean {
+  return getGeminiApiKey() !== null;
+}
+
+export function getGeminiClient(): GoogleGenAI {
+  const apiKey = getGeminiApiKey();
+  if (!apiKey) {
+    throw new Error('GEMINI_API_KEY is missing or empty.');
+  }
+  return new GoogleGenAI({ apiKey });
+}

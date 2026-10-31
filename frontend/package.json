@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test:gemini": "node --env-file=.env.local scripts/test-gemini.mjs"
+    "test:gemini": "node --env-file=.env.local scripts/test-gemini.mjs",
+    "test:fallback": "node scripts/test-production-fallback.mjs"
   },
   "engines": {
     "node": ">=20.0.0"

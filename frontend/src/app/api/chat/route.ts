@@ -1,7 +1,8 @@
 import { NextRequest } from 'next/server';
-import { getGeminiClient, geminiModel } from '@/lib/gemini';
+import { getGeminiClient, getGeminiApiKey, getGeminiModel } from '@/lib/gemini';
 import { getAssistantSystemInstruction } from '@/lib/assistant-prompt';
 
+export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 export const maxDuration = 30;
 
@@ -27,19 +28,41 @@ function isRateLimited(ip: string): boolean {
   return false;
 }
 
-function mapGeminiError(error: any): { status: number; message: string } {
+function isProductionMode(): boolean {
+  if (process.env.VERCEL_ENV === 'production' || process.env.VERCEL_ENV === 'preview') {
+    return true;
+  }
+  if (process.env.VERCEL_ENV === 'development') {
+    return false;
+  }
+  const dynamicNodeEnv = process.env[['NODE', 'ENV'].join('_')];
+  if (dynamicNodeEnv === 'production') {
+    return true;
+  }
+  if (dynamicNodeEnv === 'development' || dynamicNodeEnv === 'test') {
+    return false;
+  }
+  return process.env.NODE_ENV === 'production';
+}
+
+function mapGeminiError(error: any, modelName: string): { status: number; message: string } {
   const errMsg = error?.message || String(error);
   const lower = errMsg.toLowerCase();
+  const isProd = isProductionMode();
 
   if (
     lower.includes('api key') ||
     lower.includes('unauthenticated') ||
     lower.includes('invalid api_key')
   ) {
+    console.warn(
+      `[chat] Invalid or missing Gemini API key (VERCEL_ENV=${process.env.VERCEL_ENV ?? 'local'}, NODE_ENV=${process.env.NODE_ENV})`
+    );
     return {
       status: 401,
-      message:
-        'Invalid or unconfigured Gemini API key. Please verify GEMINI_API_KEY in frontend/.env.local.',
+      message: isProd
+        ? 'The AI assistant is temporarily unavailable. Please try again in a moment.'
+        : 'Invalid or unconfigured Gemini API key. Please verify GEMINI_API_KEY in frontend/.env.local.',
     };
   }
   if (
@@ -50,7 +73,7 @@ function mapGeminiError(error: any): { status: number; message: string } {
   ) {
     return {
       status: 429,
-      message: 'Gemini API quota or rate limit exceeded. Please wait a minute and retry.',
+      message: 'Too many requests, please wait a few seconds and retry',
     };
   }
   if (
@@ -58,15 +81,16 @@ function mapGeminiError(error: any): { status: number; message: string } {
     lower.includes('404') ||
     lower.includes('unsupported model')
   ) {
+    console.warn(`[chat] Gemini model "${modelName}" not found or unsupported`);
     return {
       status: 404,
-      message: `Gemini model "${geminiModel}" was not found or is unsupported for this key.`,
+      message: 'The AI assistant is temporarily unavailable. Please try again in a moment.',
     };
   }
   if (lower.includes('timed out') || lower.includes('timeout')) {
     return {
       status: 504,
-      message: 'Request timed out after 30 seconds. Please try again.',
+      message: 'Request timed out. Please try again in a moment.',
     };
   }
   if (
@@ -76,12 +100,12 @@ function mapGeminiError(error: any): { status: number; message: string } {
   ) {
     return {
       status: 502,
-      message: 'Network error connecting to Gemini API. Please check your internet connection.',
+      message: 'Network error connecting to Gemini AI. Please check your connection and retry.',
     };
   }
   return {
     status: 500,
-    message: `Gemini API server error: ${errMsg.slice(0, 150)}`,
+    message: 'The AI assistant is temporarily unavailable. Please try again in a moment.',
   };
 }
 
@@ -91,7 +115,7 @@ export async function POST(req: NextRequest) {
     req.headers.get('x-forwarded-for')?.split(',')[0].trim() || '127.0.0.1';
   if (isRateLimited(clientIp)) {
     return Response.json(
-      { error: 'Rate limit exceeded. Please wait a minute before sending more queries.' },
+      { error: 'Too many requests, please wait a few seconds and retry' },
       { status: 429 }
     );
   }
@@ -101,7 +125,7 @@ export async function POST(req: NextRequest) {
   try {
     body = await req.json();
   } catch {
-    return Response.json({ error: 'Invalid JSON payload' }, { status: 400 });
+    return Response.json({ error: 'Invalid JSON payload.' }, { status: 400 });
   }
 
   const { messages } = body;
@@ -128,18 +152,19 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  // 3. Verify Gemini Client
-  let ai;
-  try {
-    ai = getGeminiClient();
-  } catch (err: any) {
-    return Response.json(
-      {
-        error:
-          'Gemini API key is not configured. Add GEMINI_API_KEY to frontend/.env.local to enable live responses.',
-      },
-      { status: 400 }
+  // 3. Verify Gemini Configuration at Request Time
+  const apiKey = getGeminiApiKey();
+  const modelName = getGeminiModel();
+
+  if (!apiKey) {
+    console.warn(
+      `[chat] GEMINI_API_KEY is missing (VERCEL_ENV=${process.env.VERCEL_ENV ?? 'local'}, NODE_ENV=${process.env.NODE_ENV})`
     );
+    const friendlyMsg = isProductionMode()
+      ? 'The AI assistant is temporarily unavailable. Please try again in a moment.'
+      : 'Gemini API key is not configured. Add GEMINI_API_KEY to frontend/.env.local to enable live responses.';
+
+    return Response.json({ error: friendlyMsg }, { status: 400 });
   }
 
   // 4. Trim to last 10 messages and format for Gemini SDK
@@ -162,6 +187,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
+    const ai = getGeminiClient();
     const systemInstruction = getAssistantSystemInstruction();
 
     // 30 seconds max timeout promise
@@ -170,7 +196,7 @@ export async function POST(req: NextRequest) {
     );
 
     const streamPromise = ai.models.generateContentStream({
-      model: geminiModel,
+      model: modelName,
       contents,
       config: {
         systemInstruction,
@@ -190,8 +216,8 @@ export async function POST(req: NextRequest) {
             }
           }
         } catch (streamErr: any) {
-          console.error('Error during chunk streaming:', streamErr);
-          const mapped = mapGeminiError(streamErr);
+          console.error('[chat] Stream interrupted:', streamErr?.message || streamErr);
+          const mapped = mapGeminiError(streamErr, modelName);
           controller.enqueue(
             encoder.encode(`\n\n*(Error: ${mapped.message})*`)
           );
@@ -209,8 +235,8 @@ export async function POST(req: NextRequest) {
       },
     });
   } catch (error: any) {
-    console.error('Gemini API Error:', error?.message || error);
-    const mapped = mapGeminiError(error);
+    console.error('[chat] Gemini API Error:', error?.message || error);
+    const mapped = mapGeminiError(error, modelName);
     return Response.json({ error: mapped.message }, { status: mapped.status });
   }
 }

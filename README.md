@@ -48,6 +48,7 @@ Payflow.AI/
 ├── design/stitch-exports/         # Stitch HTML & screenshot exports
 └── frontend/                      # Standalone Next.js App Router frontend
     ├── src/app/                   # App Router pages (/dashboard, /assistant, etc.)
+    │   ├── api/ai-status/route.ts # AI assistant configuration probe
     │   ├── api/chat/route.ts      # Streaming Gemini AI route handler
     │   ├── assistant/page.tsx     # Dedicated AI assistant chat interface
     │   ├── buyers/                # Buyers portfolio & buyer detail views
@@ -102,11 +103,42 @@ Payflow.AI/
 
 ## 🚢 Deployment to Vercel
 
-Deploy the application to Vercel in seconds:
+### Step 1: Project Settings
 - **Framework Preset**: `Next.js`
 - **Root Directory**: `frontend`
 - **Build Command**: `npm run build`
 - **Output Directory**: `.next` (default)
-- **Environment Variables**:
-  - `GEMINI_API_KEY`: Your Gemini API key (*required for live AI responses*)
-  - `GEMINI_MODEL`: `gemini-3.5-flash` (*optional, defaults to `gemini-3.5-flash`*)
+- **Node.js Version**: `20.x`
+
+### Step 2: Environment Variables
+In your Vercel Project dashboard:
+1. Navigate to **Settings > Environment Variables**.
+2. Add `GEMINI_API_KEY`:
+   - **Key**: `GEMINI_API_KEY`
+   - **Value**: *(Your Gemini API key from Google AI Studio)*
+   - **Environments**: Check **Production**, **Preview**, and **Development**.
+3. (Optional) Add `GEMINI_MODEL`:
+   - **Key**: `GEMINI_MODEL`
+   - **Value**: `gemini-3.5-flash`
+
+> [!IMPORTANT]
+> **Environment Variable Changes Require a Redeploy**:  
+> In Vercel, newly added or updated environment variables apply only to new deployments. To apply them immediately to an active deployment:
+> 1. Go to the **Deployments** tab.
+> 2. Click the `...` menu on your latest deployment.
+> 3. Click **Redeploy**.
+
+### Step 3: Verify Configuration
+Once deployed, check that your environment variable is active by visiting:
+```
+https://<your-project>.vercel.app/api/ai-status
+```
+It returns JSON confirming configuration:
+```json
+{
+  "configured": true,
+  "model": "gemini-3.5-flash",
+  "environment": "production"
+}
+```
+*(This endpoint never exposes your key or any part of it).*
